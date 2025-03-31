@@ -1,0 +1,359 @@
+/* --- Component Styles --- */
+
+/* Prep Station Title */
+#prep-station-title {
+    font-weight: 700;
+    color: #8B4513;
+    font-size: 1.3em;
+    min-height: 1.5em;
+    line-height: 1.2;
+    border-bottom: 1px dashed #A0522D;
+    padding-bottom: 5px;
+}
+
+/* --- NEW: Waiting Orders Display --- */
+#waiting-orders-area {
+    width: 95%;
+    margin-bottom: 15px;
+    padding: 8px;
+    border: 1px solid #D3C0A5;
+    border-radius: 4px;
+    background-color: #fff; /* White background to stand out */
+    text-align: center;
+    flex-shrink: 0;
+}
+#waiting-orders-area h3 {
+    font-size: 1.0em;
+    color: #A0522D;
+    margin-bottom: 5px;
+    font-weight: bold;
+    border-bottom: 1px dotted #ccc;
+    padding-bottom: 3px;
+}
+#current-orders-display {
+    min-height: 30px;
+    max-height: 90px; /* Limit height */
+    overflow-y: auto; /* Add scroll if many orders */
+    padding: 5px;
+    background-color: #f9f9f9;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+#current-orders-display p { /* Placeholder text */
+    color: #888;
+    font-style: italic;
+    margin: 5px 0;
+}
+.order-item {
+    margin: 3px 0;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background-color: #eef; /* Light background for each item */
+    display: block; /* Ensure each order is on a new line */
+    text-align: left; /* Align text left within item */
+}
+.order-item .order-customer-id {
+    font-weight: bold;
+    color: #555;
+    margin-right: 5px;
+}
+.order-item .order-visual {
+    margin-left: 5px;
+    font-size: 1.1em; /* Slightly larger emoji */
+}
+/* --- END NEW --- */
+
+
+/* Ingredient Buttons */
+#ingredient-buttons {
+    text-align: center;
+    margin-bottom: 10px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.ingredient-btn {
+    display: inline-block;
+    padding: 10px 14px;
+    margin: 4px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border: 1px solid #BDBDBD;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    color: #333;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    user-select: none;
+}
+.ingredient-btn:hover { background-color: #E8E8E8; border-color: #9E9E9E; }
+.ingredient-btn:active { transform: scale(0.95); }
+
+/* Current Preparation Area */
+#current-prep {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+#prep-display {
+    min-height: 40px;
+    border: 1px dashed #BDBDBD;
+    width: 90%;
+    margin-top: 5px;
+    padding: 6px;
+    background-color: #F9F9F9;
+    font-size: 1.4em;
+    text-align: center;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, border 0.2s ease, transform 0.2s ease;
+}
+#prep-display.drag-over {
+    border: 2px dashed #4CAF50;
+    background-color: #e8f5e9;
+    transform: scale(1.02);
+}
+
+/* --- UPDATED: Prep Actions Container --- */
+.prep-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Space between buttons */
+    margin-top: 8px;
+    width: 90%;
+}
+
+/* Finish Prep Button (Now inside prep-actions) */
+#finish-prep-btn {
+    padding: 10px 20px; /* Slightly adjusted padding */
+    font-size: 1.0em; /* Slightly adjusted size */
+    /* margin-top: 10px; NO - Handled by gap */
+    border: none;
+    color: white;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
+    background-color: #FF8C00;
+    box-shadow: 0 2px 5px rgba(255, 140, 0, 0.3);
+    cursor: pointer;
+    /* flex-shrink: 0; NO - Handled by container */
+}
+#finish-prep-btn:hover:not(:disabled) { background-color: #E67E00; box-shadow: 0 4px 8px rgba(255, 140, 0, 0.4); }
+#finish-prep-btn:disabled { background-color: #cccccc; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
+
+
+/* Clear Prep Button (Now inside prep-actions) */
+#clear-prep-btn {
+     background-color: #616161;
+     font-size: 0.9em;
+     padding: 8px 15px;
+     /* margin-top: 8px; NO - Handled by gap */
+     font-weight: 400;
+     box-shadow: 0 2px 4px rgba(97, 97, 97, 0.2);
+     text-transform: none;
+     cursor: pointer;
+     border: none;
+     color: white;
+     border-radius: 6px;
+     transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+#clear-prep-btn:hover { background-color: #424242; box-shadow: 0 3px 6px rgba(97, 97, 97, 0.3); }
+
+/* Finished Dish Area */
+#finished-dish-area {
+    width: 90%;
+    margin-top: 15px; /* More space above queue */
+    text-align: center;
+     flex-shrink: 0;
+}
+
+/* --- UPDATED: Finished Dish Display (Queue) --- */
+#finished-dish-display {
+    min-height: 45px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    display: flex;
+    /* justify-content: center; NO - Let them align left */
+    justify-content: flex-start; /* Align items to the start */
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 8px; /* Space between queued dishes */
+    margin-top: 5px;
+    padding: 8px; /* More padding */
+}
+
+.finished-dish-item {
+    font-size: 1.8em; /* Slightly smaller to fit more */
+    cursor: grab;
+    user-select: none;
+    display: inline-block;
+    background-color: #fff; /* Give items a background */
+    padding: 2px 6px;
+    border: 1px solid #bdbdbd;
+    border-radius: 4px;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    /* No min-width needed, size based on content */
+}
+.finished-dish-item:active { cursor: grabbing; }
+
+
+/* Sushi Belt */
+#sushi-belt-container {
+    width: 95%;
+    min-height: 70px;
+    background-color: #555;
+    border: 2px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 15px auto 10px auto;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease, border 0.2s ease;
+    flex-shrink: 0;
+    padding: 5px;
+}
+#sushi-belt-container h3 { /* Belt Label */
+    font-size: 0.8em;
+    color: #eee;
+    margin: 0 0 5px 0;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+#sushi-belt-container.drag-over {
+    background-color: #777;
+    border: 2px dashed #FFFFAA;
+}
+
+#sushi-belt-track {
+    width: 100%;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    white-space: nowrap;
+}
+.belt-placeholder {
+    font-size: 1.6em;
+    color: #bbb;
+    margin: 0 10px;
+    user-select: none;
+}
+
+/* Message Area */
+#message-area {
+    margin-top: 15px;
+    font-weight: 400;
+    min-height: 25px;
+    font-size: 0.9em;
+    text-align: center;
+    width: 90%;
+    padding: 4px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+#message-area.message-success { background-color: #E8F5E9; border: 1px solid #A5D6A7; }
+#message-area.message-error { background-color: #FFEBEE; border: 1px solid #EF9A9A; }
+#message-area.message-warning { background-color: #FFF3E0; border: 1px solid #FFCC80; }
+#message-area.message-info { background-color: #E3F2FD; border: 1px solid #90CAF9; }
+
+/* Customer Table Seats (and related) */
+/* Container for the list of customer seats is in layout.css */
+/* Individual customer seat/card */
+.customer-table-seat {
+    border: 1px solid #B8860B;
+    background-color: #fff;
+    border-radius: 8px; /* Slightly rounder */
+    padding: 10px;
+    margin: 8px; /* Spacing around each seat */
+    width: 180px; /* Fixed width for each seat */
+    min-height: 100px; /* Minimum height */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column; /* Stack label and status */
+    align-items: center; /* Center content horizontally */
+    text-align: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+}
+.customer-table-seat.state-eating {
+    background-color: #f0fff0; /* Light green background */
+}
+
+.customer-seat-label {
+    font-size: 1em;
+    font-weight: 700;
+    color: #8B4513;
+    margin-bottom: 8px;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+.customer-status-display {
+    font-size: 0.9em;
+    min-height: 50px; /* Ensure space for content */
+    display: flex;
+    flex-direction: column; /* Stack name/visual or text */
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* Allow status area to take remaining space */
+    width: 100%;
+}
+
+.customer-status-display .pondering-text {
+    font-style: italic;
+    color: #777;
+}
+
+.customer-status-display .order-details {
+    width: 100%;
+    text-align: center;
+}
+.customer-status-display .order-name {
+    font-size: 0.95em;
+    font-weight: 400;
+    color: #333;
+    display: block; /* Ensure it takes full width */
+    margin-bottom: 5px;
+}
+
+.customer-status-display .order-visual {
+    font-size: 1.8em; /* Larger visual */
+    display: inline-block; /* Allows transforms/opacity */
+    margin-top: 5px;
+    transition: opacity 0.2s linear; /* Smooth fade out while eating */
+}
+
+
+/* Style for the party status area (inside #table-area) */
+#party-status {
+    color: #8B4513; /* Match other titles */
+    font-size: 1.1em; /* Slightly larger than seat label */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 10px; /* Space before seats */
+    width: 90%; /* Consistent width */
+    text-align: center;
+    font-weight: bold; /* Make it stand out */
+}
+
+/* Style for completed customer seat */
+.customer-table-seat.state-finished {
+    border-color: #4CAF50; /* Green border to indicate success */
+    background-color: #f7fff7; /* Very light green background */
+    opacity: 0.8; /* Slightly fade out to de-emphasize */
+    box-shadow: 0 1px 3px rgba(76, 175, 80, 0.3); /* Subtle green shadow */
+}

@@ -1,0 +1,74 @@
+/* --- Main Layout Containers --- */
+
+#game-area {
+    display: flex;
+    justify-content: space-around;
+    border: 2px solid #A0522D;
+    padding: 15px;
+    margin: 0 15px 15px 15px;
+    background-color: #FFFFFF;
+    width: calc(100% - 30px);
+    max-width: 950px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
+    align-items: stretch;
+}
+
+#prep-station, #ui-area {
+    border: 1px solid #D3C0A5;
+    padding: 10px;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 6px;
+    background-color: #FFF8DC;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#prep-station {
+    flex-grow: 2;
+    flex-basis: 0;
+    background-color: #FFFACD;
+    min-width: 300px;
+}
+
+#ui-area {
+    flex-grow: 1;
+    flex-basis: 0;
+    background-color: #F5F5F5;
+    min-width: 180px;
+}
+
+#table-area {
+    border: 3px dashed #8B4513;
+    background-color: #FFF8DC;
+    padding: 15px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 700px; /* Wider max-width */
+    min-height: 150px; /* Increased min-height slightly */
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex-shrink: 0;
+    overflow-y: auto;
+    max-height: 300px; /* Increased max height slightly */
+}
+
+/* Container for the list of customer seats */
+#customer-orders-at-table {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Allow seats to wrap onto next line */
+    justify-content: center; /* Center seats horizontally */
+    align-items: flex-start; /* Align tops of seats */
+    padding: 0 5px;
+}

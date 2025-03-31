@@ -1,0 +1,481 @@
+/* --- Optional: Import a Google Font --- */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap');
+
+/* --- Base Layout --- */
+html {
+    height: 100%; /* Ensure HTML takes full height */
+    overflow-x: hidden; /* Prevent horizontal scrollbars on html */
+    overflow-y: auto; /* Allow vertical scroll if content overflows */
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    display: flex;
+    flex-direction: column; /* Stack title, game, table */
+    align-items: center;
+    background-color: #FAF0E6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* Use min-height to allow content growth */
+    box-sizing: border-box;
+}
+
+h1 {
+    color: #8B4513;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    border-bottom: 3px solid #DC143C;
+    padding: 0 10px 5px 10px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+#game-area {
+    display: flex;
+    justify-content: space-around;
+    border: 2px solid #A0522D;
+    padding: 15px;
+    margin: 0 15px 15px 15px;
+    background-color: #FFFFFF;
+    width: calc(100% - 30px);
+    max-width: 950px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
+    align-items: stretch;
+}
+
+#prep-station, #ui-area {
+    border: 1px solid #D3C0A5;
+    padding: 10px;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 6px;
+    background-color: #FFF8DC;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#prep-station {
+    flex-grow: 2;
+    flex-basis: 0;
+    background-color: #FFFACD;
+    min-width: 300px;
+}
+
+#ui-area {
+    flex-grow: 1;
+    flex-basis: 0;
+    background-color: #F5F5F5;
+    min-width: 180px;
+}
+
+h2, h3 {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 100%;
+    color: #5A4D41;
+    font-weight: 400;
+    flex-shrink: 0;
+}
+
+/* Style for the Prep Station title (now generic) */
+#prep-station-title {
+    font-weight: 700;
+    color: #8B4513;
+    font-size: 1.3em;
+    min-height: 1.5em;
+    line-height: 1.2;
+    border-bottom: 1px dashed #A0522D;
+    padding-bottom: 5px;
+}
+
+h3 {
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+
+#ingredient-buttons {
+    text-align: center;
+    margin-bottom: 10px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.ingredient-btn {
+    display: inline-block;
+    padding: 10px 14px;
+    margin: 4px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border: 1px solid #BDBDBD;
+    border-radius: 5px;
+    background-color: #FFFFFF;
+    color: #333;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    user-select: none;
+}
+.ingredient-btn:hover { background-color: #E8E8E8; border-color: #9E9E9E; }
+.ingredient-btn:active { transform: scale(0.95); }
+
+#current-prep {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+#prep-display {
+    min-height: 40px;
+    border: 1px dashed #BDBDBD;
+    width: 90%;
+    margin-top: 5px;
+    padding: 6px;
+    background-color: #F9F9F9;
+    font-size: 1.4em;
+    text-align: center;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, border 0.2s ease, transform 0.2s ease;
+}
+#prep-display.drag-over {
+    border: 2px dashed #4CAF50;
+    background-color: #e8f5e9;
+    transform: scale(1.02);
+}
+
+#clear-prep-btn {
+     background-color: #616161;
+     font-size: 0.9em;
+     padding: 8px 15px;
+     margin-top: 8px;
+     font-weight: 400;
+     box-shadow: 0 2px 4px rgba(97, 97, 97, 0.2);
+     text-transform: none;
+     cursor: pointer;
+     border: none;
+     color: white;
+     border-radius: 6px;
+     transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+#clear-prep-btn:hover { background-color: #424242; box-shadow: 0 3px 6px rgba(97, 97, 97, 0.3); }
+
+#finished-dish-area {
+    width: 90%;
+    margin-top: 10px;
+    text-align: center;
+     flex-shrink: 0;
+}
+
+#finished-dish-display {
+    min-height: 45px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+    padding: 5px;
+}
+
+.finished-dish-item {
+    font-size: 2em;
+    cursor: grab;
+    user-select: none;
+    display: inline-block;
+}
+.finished-dish-item:active { cursor: grabbing; }
+
+#finish-prep-btn {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin-top: 10px;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
+    background-color: #FF8C00;
+    box-shadow: 0 2px 5px rgba(255, 140, 0, 0.3);
+     flex-shrink: 0;
+}
+#finish-prep-btn:hover:not(:disabled) { background-color: #E67E00; box-shadow: 0 4px 8px rgba(255, 140, 0, 0.4); }
+#finish-prep-btn:disabled { background-color: #cccccc; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
+
+#sushi-belt-container {
+    width: 95%;
+    min-height: 70px;
+    background-color: #555;
+    border: 2px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 15px auto 10px auto;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease, border 0.2s ease;
+    flex-shrink: 0;
+    padding: 5px;
+}
+#sushi-belt-container h3 {
+    font-size: 0.8em;
+    color: #eee;
+    margin: 0 0 5px 0;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+#sushi-belt-container.drag-over {
+    background-color: #777;
+    border: 2px dashed #FFFFAA;
+}
+
+#sushi-belt-track {
+    width: 100%;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    white-space: nowrap;
+}
+.belt-placeholder {
+    font-size: 1.6em;
+    color: #bbb;
+    margin: 0 10px;
+    user-select: none;
+}
+
+#message-area {
+    margin-top: 15px;
+    font-weight: 400;
+    min-height: 25px;
+    font-size: 0.9em;
+    text-align: center;
+    width: 90%;
+    padding: 4px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+#message-area.message-success { background-color: #E8F5E9; border: 1px solid #A5D6A7; }
+#message-area.message-error { background-color: #FFEBEE; border: 1px solid #EF9A9A; }
+#message-area.message-warning { background-color: #FFF3E0; border: 1px solid #FFCC80; }
+#message-area.message-info { background-color: #E3F2FD; border: 1px solid #90CAF9; }
+
+
+/* --- **** MODIFIED: Table Area Styles **** --- */
+#table-area {
+    border: 3px dashed #8B4513;
+    background-color: #FFF8DC;
+    padding: 15px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 700px; /* Wider max-width */
+    min-height: 150px; /* Increased min-height slightly */
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex-shrink: 0;
+    overflow-y: auto;
+    max-height: 300px; /* Increased max height slightly */
+}
+
+#table-area h2 {
+    margin-bottom: 10px;
+    color: #8B4513;
+    flex-shrink: 0;
+}
+
+/* Container for the list of customer seats */
+#customer-orders-at-table {
+    width: 100%;
+    display: flex;
+    /* flex-direction: column; Allow wrapping */
+    flex-wrap: wrap; /* Allow seats to wrap onto next line */
+    justify-content: center; /* Center seats horizontally */
+    align-items: flex-start; /* Align tops of seats */
+    padding: 0 5px;
+}
+
+/* Individual customer seat/card */
+.customer-table-seat {
+    border: 1px solid #B8860B;
+    background-color: #fff;
+    border-radius: 8px; /* Slightly rounder */
+    padding: 10px;
+    margin: 8px; /* Spacing around each seat */
+    width: 180px; /* Fixed width for each seat */
+    min-height: 100px; /* Minimum height */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column; /* Stack label and status */
+    align-items: center; /* Center content horizontally */
+    text-align: center;
+    transition: background-color 0.3s ease; /* Smooth transition for state changes */
+}
+/* Optional: Highlight when eating */
+.customer-table-seat.state-eating {
+    background-color: #f0fff0; /* Light green background */
+}
+
+.customer-seat-label {
+    font-size: 1em;
+    font-weight: 700;
+    color: #8B4513;
+    margin-bottom: 8px;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+/* Area showing order, pondering text, or eating visual */
+.customer-status-display {
+    font-size: 0.9em;
+    min-height: 50px; /* Ensure space for content */
+    display: flex;
+    flex-direction: column; /* Stack name/visual or text */
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* Allow status area to take remaining space */
+    width: 100%;
+}
+
+/* Styles for when customer is pondering */
+.customer-status-display .pondering-text {
+    font-style: italic;
+    color: #777;
+}
+
+/* Styles for displaying the actual order */
+.customer-status-display .order-details {
+    width: 100%;
+    text-align: center;
+}
+.customer-status-display .order-name {
+    font-size: 0.95em;
+    font-weight: 400;
+    color: #333;
+    display: block; /* Ensure it takes full width */
+    margin-bottom: 5px;
+}
+
+/* Visual representation of the order/dish */
+.customer-status-display .order-visual {
+    font-size: 1.8em; /* Larger visual */
+    display: inline-block; /* Allows transforms/opacity */
+    margin-top: 5px;
+    transition: opacity 0.2s linear; /* Smooth fade out while eating */
+}
+
+
+/* --- Orbiting Dish Style --- */
+.orbiting-dish {
+    position: absolute;
+    z-index: 1000;
+    font-size: 2em;
+    user-select: none;
+    pointer-events: none;
+    will-change: transform;
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 0 5px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+/* --- Media Queries --- */
+@media (max-width: 768px) {
+    h1 { font-size: 1.5em; margin-top: 10px; }
+    #game-area {
+        flex-direction: column;
+        align-items: center;
+        width: calc(100% - 20px);
+        margin: 0 10px 10px 10px;
+        padding: 10px;
+        overflow-y: auto;
+        flex-grow: 0;
+         min-height: 400px;
+    }
+    #prep-station, #ui-area {
+        flex-basis: auto;
+        width: 95%;
+        min-width: unset;
+        margin: 8px 0;
+        overflow-y: visible;
+        flex-grow: 0;
+        min-height: unset;
+    }
+    #prep-station { order: 1; }
+    #ui-area { order: 2; }
+
+     #table-area {
+        width: 95%; /* More width on mobile */
+        margin: 15px auto;
+        padding: 10px;
+        min-height: 120px;
+        max-height: 250px;
+    }
+    /* Adjust seat size for smaller screens if needed */
+    .customer-table-seat {
+        width: 150px; /* Slightly smaller seats */
+        min-height: 90px;
+        margin: 5px;
+        padding: 8px;
+    }
+    .customer-seat-label { font-size: 0.9em; }
+    .customer-status-display { min-height: 40px; font-size: 0.85em;}
+    .customer-status-display .order-visual { font-size: 1.6em; }
+}
+
+@media (max-width: 480px) {
+     /* Further adjust for very small screens */
+     #table-area {
+         max-height: 200px;
+     }
+     .customer-table-seat {
+         width: calc(90% - 10px); /* Make seats take most width, stack vertically */
+         margin: 5px auto; /* Center vertically */
+     }
+     #customer-orders-at-table {
+         justify-content: flex-start; /* Align single column left */
+     }
+}
+
+@media (max-height: 650px) {
+     h1 { font-size: 1.3em; margin-top: 5px; margin-bottom: 5px; padding-bottom: 3px; }
+    #game-area { padding: 10px; margin: 0 10px 10px 10px; min-height: 280px; } /* Reduced height */
+     #prep-station, #ui-area { padding: 8px; margin: 4px 0; }
+     #prep-station-title { font-size: 1.1em; }
+    .ingredient-btn { padding: 8px 10px; margin: 3px; font-size: 1em; }
+     #prep-display { font-size: 1.3em; min-height: 35px; }
+     .finished-dish-item { font-size: 1.8em; }
+     #finished-dish-display { min-height: 40px; }
+     #finish-prep-btn { font-size: 1em; padding: 10px 20px; margin-top: 8px;}
+     #sushi-belt-container { min-height: 60px; margin: 10px auto 5px auto; }
+     #sushi-belt-track { height: 30px; }
+     .belt-placeholder { font-size: 1.4em; }
+     #message-area { font-size: 0.85em; min-height: 20px; }
+     #table-area { min-height: 100px; padding: 8px; margin: 10px auto; max-height: 180px; }
+     #table-area h2 { font-size: 1em; margin-bottom: 8px; }
+     /* Adjust seat styles for short screens if needed */
+}

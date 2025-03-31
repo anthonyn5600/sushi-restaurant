@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushi Sprint!</title>
+    <!-- Link CSS Files -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <!-- OR if using the combined style.css: -->
+    <!-- <link rel="stylesheet" href="style.css"> -->
+</head>
+<body>
+    <h1>Sushi Sprint!</h1>
+
+    <div id="game-area">
+        <div id="prep-station">
+            <h2 id="prep-station-title">Prep Station</h2>
+
+            <!-- NEW: Current Orders Display Area -->
+            <div id="waiting-orders-area">
+                <h3>Waiting Orders:</h3>
+                <div id="current-orders-display">
+                     <!-- Orders will be populated by JS -->
+                     <p>No orders waiting...</p>
+                </div>
+            </div>
+
+            <div id="ingredient-buttons"></div>
+            <div id="current-prep">
+                <h3>Preparing:</h3>
+                <div id="prep-display"></div>
+
+                <div class="prep-actions">
+                    <button id="finish-prep-btn">Finish Prep</button>
+                    <button id="clear-prep-btn">Clear Prep</button>
+                </div>
+
+                <div id="finished-dish-area">
+                    <h3>Ready Dishes Queue:</h3>
+                    <div id="finished-dish-display"></div>
+                </div>
+            </div>
+            <div id="sushi-belt-container">
+                 <h3>Drop Dish Here to Serve</h3>
+                <div id="sushi-belt-track">
+                    <span class="belt-placeholder">🍽️</span>
+                    <span class="belt-placeholder">🥢</span>
+                </div>
+            </div>
+        </div>
+        <div id="ui-area">
+            <h2>Score: <span id="score">0</span></h2>
+            <div id="message-area"></div>
+        </div>
+    </div>
+
+    <div id="table-area">
+        <h2>Customer Table</h2>
+        <div id="party-status">
+            Party Satisfaction: <span id="party-hunger-meter">-- / --</span>
+        </div>
+        <div id="customer-orders-at-table">
+            <!-- Customer seats will be populated by JS -->
+        </div>
+    </div>
+
+    <!-- Load JavaScript Files (Order is IMPORTANT) -->
+    <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/customer.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

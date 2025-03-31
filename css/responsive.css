@@ -1,0 +1,74 @@
+/* --- Media Queries --- */
+
+@media (max-width: 768px) {
+    h1 { font-size: 1.5em; margin-top: 10px; }
+    #game-area {
+        flex-direction: column;
+        align-items: center;
+        width: calc(100% - 20px);
+        margin: 0 10px 10px 10px;
+        padding: 10px;
+        overflow-y: auto;
+        flex-grow: 0;
+         min-height: 400px;
+    }
+    #prep-station, #ui-area {
+        flex-basis: auto;
+        width: 95%;
+        min-width: unset;
+        margin: 8px 0;
+        overflow-y: visible;
+        flex-grow: 0;
+        min-height: unset;
+    }
+    #prep-station { order: 1; }
+    #ui-area { order: 2; }
+
+     #table-area {
+        width: 95%; /* More width on mobile */
+        margin: 15px auto;
+        padding: 10px;
+        min-height: 120px;
+        max-height: 250px;
+    }
+    .customer-table-seat {
+        width: 150px; /* Slightly smaller seats */
+        min-height: 90px;
+        margin: 5px;
+        padding: 8px;
+    }
+    .customer-seat-label { font-size: 0.9em; }
+    .customer-status-display { min-height: 40px; font-size: 0.85em;}
+    .customer-status-display .order-visual { font-size: 1.6em; }
+}
+
+@media (max-width: 480px) {
+     #table-area {
+         max-height: 200px;
+     }
+     .customer-table-seat {
+         width: calc(90% - 10px); /* Stack vertically */
+         margin: 5px auto;
+     }
+     #customer-orders-at-table {
+         justify-content: flex-start; /* Align single column left */
+     }
+}
+
+@media (max-height: 650px) {
+     h1 { font-size: 1.3em; margin-top: 5px; margin-bottom: 5px; padding-bottom: 3px; }
+    #game-area { padding: 10px; margin: 0 10px 10px 10px; min-height: 280px; }
+     #prep-station, #ui-area { padding: 8px; margin: 4px 0; }
+     #prep-station-title { font-size: 1.1em; }
+    .ingredient-btn { padding: 8px 10px; margin: 3px; font-size: 1em; }
+     #prep-display { font-size: 1.3em; min-height: 35px; }
+     .finished-dish-item { font-size: 1.8em; }
+     #finished-dish-display { min-height: 40px; }
+     #finish-prep-btn { font-size: 1em; padding: 10px 20px; margin-top: 8px;}
+     #sushi-belt-container { min-height: 60px; margin: 10px auto 5px auto; }
+     #sushi-belt-track { height: 30px; }
+     .belt-placeholder { font-size: 1.4em; }
+     #message-area { font-size: 0.85em; min-height: 20px; }
+     #table-area { min-height: 100px; padding: 8px; margin: 10px auto; max-height: 180px; }
+     #table-area h2 { font-size: 1em; margin-bottom: 8px; }
+}

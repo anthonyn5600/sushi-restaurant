@@ -1,0 +1,49 @@
+/* --- Optional: Import a Google Font --- */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap');
+
+/* --- Base Layout --- */
+html {
+    height: 100%; /* Ensure HTML takes full height */
+    overflow-x: hidden; /* Prevent horizontal scrollbars on html */
+    overflow-y: auto; /* Allow vertical scroll if content overflows */
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    display: flex;
+    flex-direction: column; /* Stack title, game, table */
+    align-items: center;
+    background-color: #FAF0E6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* Use min-height to allow content growth */
+    box-sizing: border-box;
+}
+
+h1 {
+    color: #8B4513;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    border-bottom: 3px solid #DC143C;
+    padding: 0 10px 5px 10px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+h2, h3 {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 100%;
+    color: #5A4D41;
+    font-weight: 400;
+    flex-shrink: 0;
+}
+
+h3 {
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
