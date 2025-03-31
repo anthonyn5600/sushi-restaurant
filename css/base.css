@@ -1,49 +1,89 @@
 /* --- Optional: Import a Google Font --- */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
-/* --- Base Layout --- */
+/* --- Base Variables & Styles --- */
+:root {
+    --color-primary-dark: #8B4513; /* SaddleBrown */
+    --color-primary-medium: #A0522D; /* Sienna */
+    --color-primary-light: #B8860B; /* DarkGoldenrod */
+    --color-accent: #FF8C00; /* DarkOrange */
+    --color-accent-hover: #E67E00; /* Darker Orange */
+    --color-background-body: #FAF0E6; /* Linen */
+    --color-background-card: #FFFFFF;
+    --color-background-section: #FFFBF0; /* Lighter cream variant */
+    --color-background-alt: #F5F5F5; /* Light Gray */
+    --color-background-dark: #5A4D41; /* Dim Gray/Brown */
+    --color-text-dark: #333333;
+    --color-text-medium: #5A4D41;
+    --color-text-light: #777777;
+    --color-border-light: #E0E0E0;
+    --color-border-medium: #D3C0A5; /* Original border color */
+    --color-success: #4CAF50;
+    --color-success-bg: #E8F5E9;
+    --color-error: #F44336;
+    --color-error-bg: #FFEBEE;
+    --color-warning: #FF9800;
+    --color-warning-bg: #FFF3E0;
+    --color-info: #2196F3;
+    --color-info-bg: #E3F2FD;
+
+    --font-family-base: 'Noto Sans JP', sans-serif;
+    --shadow-soft: 0 2px 5px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-interactive: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --border-radius-small: 4px;
+    --border-radius-medium: 8px;
+    --border-radius-large: 12px;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 html {
-    height: 100%; /* Ensure HTML takes full height */
-    overflow-x: hidden; /* Prevent horizontal scrollbars on html */
-    overflow-y: auto; /* Allow vertical scroll if content overflows */
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-size: 16px; /* Base font size */
 }
 
 body {
-    font-family: 'Noto Sans JP', sans-serif;
+    font-family: var(--font-family-base);
     display: flex;
-    flex-direction: column; /* Stack title, game, table */
+    flex-direction: column;
     align-items: center;
-    background-color: #FAF0E6;
-    color: #333;
-    margin: 0;
+    background-color: var(--color-background-body);
+    color: var(--color-text-dark);
+    min-height: 100vh;
     padding: 0;
-    min-height: 100vh; /* Use min-height to allow content growth */
-    box-sizing: border-box;
 }
 
 h1 {
-    color: #8B4513;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    color: var(--color-primary-dark);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
     font-weight: 700;
-    border-bottom: 3px solid #DC143C;
-    padding: 0 10px 5px 10px;
+    font-size: 1.8rem;
+    border-bottom: 3px solid var(--color-accent); /* Use accent for title underline */
+    padding: 0 1rem 0.3rem 1rem;
     letter-spacing: 1px;
     flex-shrink: 0;
     text-align: center;
 }
 
 h2, h3 {
-    margin-top: 5px;
-    margin-bottom: 10px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.8rem;
     text-align: center;
     width: 100%;
-    color: #5A4D41;
-    font-weight: 400;
+    color: var(--color-text-medium);
+    font-weight: 500; /* Slightly heavier than default 400 */
     flex-shrink: 0;
 }
 
 h3 {
-    font-size: 1.1em;
-    margin-bottom: 8px;
+    font-size: 1.1rem;
+    color: var(--color-primary-dark); /* Make H3s darker */
 }

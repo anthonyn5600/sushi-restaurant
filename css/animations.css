@@ -1,17 +1,20 @@
-/* --- Animation Styles --- */
-
+/* --- Animations --- */
 .orbiting-dish {
     position: absolute;
     z-index: 1000;
-    font-size: 2em;
+    font-size: 2.2em; /* Slightly larger orbiter */
     user-select: none;
     pointer-events: none;
     will-change: transform;
-    background-color: rgba(255, 255, 255, 0.6);
-    padding: 0 5px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    background-color: rgba(255, 255, 255, 0.7); /* Slightly more opaque background */
+    padding: 0.1rem 0.5rem;
+    border-radius: var(--border-radius-small);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    text-shadow: 0 0 2px white; /* Add subtle text shadow */
 }
 
-/* Keyframes for animations could go here if defined in CSS, */
-/* but the orbit animation is currently done via JS Web Animations API */
+/* Optional pulse animation example */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}

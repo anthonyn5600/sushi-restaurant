@@ -3,90 +3,107 @@
 /* Prep Station Title */
 #prep-station-title {
     font-weight: 700;
-    color: #8B4513;
-    font-size: 1.3em;
-    min-height: 1.5em;
-    line-height: 1.2;
-    border-bottom: 1px dashed #A0522D;
-    padding-bottom: 5px;
+    color: var(--color-primary-dark);
+    font-size: 1.4rem; /* Slightly larger */
+    min-height: auto; /* Remove min-height */
+    line-height: 1.3;
+    border-bottom: 2px solid var(--color-primary-medium); /* Solid underline */
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem; /* More space below title */
 }
 
-/* --- NEW: Waiting Orders Display --- */
+/* Waiting Orders Display */
 #waiting-orders-area {
     width: 95%;
-    margin-bottom: 15px;
-    padding: 8px;
-    border: 1px solid #D3C0A5;
-    border-radius: 4px;
-    background-color: #fff; /* White background to stand out */
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--border-radius-medium);
+    background-color: var(--color-background-card);
     text-align: center;
     flex-shrink: 0;
+    box-shadow: var(--shadow-soft);
 }
 #waiting-orders-area h3 {
-    font-size: 1.0em;
-    color: #A0522D;
-    margin-bottom: 5px;
-    font-weight: bold;
-    border-bottom: 1px dotted #ccc;
-    padding-bottom: 3px;
+    font-size: 1rem;
+    color: var(--color-primary-medium);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    border-bottom: 1px dotted var(--color-border-light);
+    padding-bottom: 0.3rem;
 }
 #current-orders-display {
-    min-height: 30px;
-    max-height: 90px; /* Limit height */
-    overflow-y: auto; /* Add scroll if many orders */
-    padding: 5px;
-    background-color: #f9f9f9;
-    border-radius: 3px;
-    font-size: 0.9em;
+    min-height: 40px;
+    max-height: 100px; /* Limit height */
+    overflow-y: auto;
+    padding: 0.5rem;
+    background-color: var(--color-background-alt);
+    border-radius: var(--border-radius-small);
+    font-size: 0.9rem;
 }
 #current-orders-display p { /* Placeholder text */
-    color: #888;
+    color: var(--color-text-light);
     font-style: italic;
-    margin: 5px 0;
+    margin: 0.5rem 0;
 }
 .order-item {
-    margin: 3px 0;
-    padding: 2px 5px;
-    border-radius: 3px;
-    background-color: #eef; /* Light background for each item */
-    display: block; /* Ensure each order is on a new line */
-    text-align: left; /* Align text left within item */
+    margin: 0.25rem 0;
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--border-radius-small);
+    background-color: #eef; /* Keep light background for contrast */
+    display: block;
+    text-align: left;
+    transition: background-color 0.2s ease;
+}
+.order-item:hover {
+     background-color: #dde; /* Slightly darker on hover */
 }
 .order-item .order-customer-id {
-    font-weight: bold;
-    color: #555;
-    margin-right: 5px;
+    font-weight: 700; /* Bolder ID */
+    color: #444;
+    margin-right: 0.4rem;
+}
+.order-item .order-name {
+     color: var(--color-text-medium);
 }
 .order-item .order-visual {
-    margin-left: 5px;
-    font-size: 1.1em; /* Slightly larger emoji */
+    margin-left: 0.5rem;
+    font-size: 1.1em;
+    vertical-align: middle; /* Align emoji better */
 }
-/* --- END NEW --- */
-
 
 /* Ingredient Buttons */
 #ingredient-buttons {
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
     width: 100%;
     flex-shrink: 0;
 }
 
 .ingredient-btn {
     display: inline-block;
-    padding: 10px 14px;
-    margin: 4px;
-    font-size: 1.1em;
+    padding: 0.7rem 1rem; /* Adjusted padding */
+    margin: 0.3rem;
+    font-size: 1.1rem;
+    font-weight: 500; /* Slightly bolder */
     cursor: pointer;
-    border: 1px solid #BDBDBD;
-    border-radius: 5px;
-    background-color: #FFFFFF;
-    color: #333;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    border: none; /* Remove border */
+    border-radius: var(--border-radius-medium);
+    background-color: var(--color-background-card);
+    color: var(--color-text-dark);
+    box-shadow: var(--shadow-interactive);
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
     user-select: none;
 }
-.ingredient-btn:hover { background-color: #E8E8E8; border-color: #9E9E9E; }
-.ingredient-btn:active { transform: scale(0.95); }
+.ingredient-btn:hover {
+    background-color: #f0f0f0;
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-2px); /* Lift effect */
+}
+.ingredient-btn:active {
+    transform: scale(0.96); /* Slightly larger press effect */
+    box-shadow: none;
+}
 
 /* Current Preparation Area */
 #current-prep {
@@ -94,228 +111,257 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     flex-shrink: 0;
 }
 
 #prep-display {
-    min-height: 40px;
-    border: 1px dashed #BDBDBD;
+    min-height: 50px; /* Taller display */
+    border: 1px solid var(--color-border-light); /* Soft solid border */
     width: 90%;
-    margin-top: 5px;
-    padding: 6px;
-    background-color: #F9F9F9;
-    font-size: 1.4em;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--color-background-alt);
+    font-size: 1.6rem; /* Larger emoji display */
     text-align: center;
-    border-radius: 4px;
-    transition: background-color 0.2s ease, border 0.2s ease, transform 0.2s ease;
+    border-radius: var(--border-radius-medium);
+    display: flex; /* Center content vertically */
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 #prep-display.drag-over {
-    border: 2px dashed #4CAF50;
-    background-color: #e8f5e9;
+    border-color: var(--color-success); /* Use success color */
+    background-color: var(--color-success-bg);
     transform: scale(1.02);
 }
 
-/* --- UPDATED: Prep Actions Container --- */
+/* Prep Actions Container */
 .prep-actions {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px; /* Space between buttons */
-    margin-top: 8px;
+    gap: 1rem; /* Consistent gap */
+    margin-top: 1rem; /* More space above actions */
     width: 90%;
 }
 
-/* Finish Prep Button (Now inside prep-actions) */
+/* Finish Prep Button */
 #finish-prep-btn {
-    padding: 10px 20px; /* Slightly adjusted padding */
-    font-size: 1.0em; /* Slightly adjusted size */
-    /* margin-top: 10px; NO - Handled by gap */
+    padding: 0.8rem 1.5rem; /* Adjust padding */
+    font-size: 1rem;
     border: none;
     color: white;
-    border-radius: 6px;
+    border-radius: var(--border-radius-medium);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px; /* More spacing */
     font-weight: 700;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
-    background-color: #FF8C00;
-    box-shadow: 0 2px 5px rgba(255, 140, 0, 0.3);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, transform 0.1s ease;
+    background-color: var(--color-accent);
+    box-shadow: 0 3px 6px rgba(255, 140, 0, 0.3); /* Slightly stronger shadow */
     cursor: pointer;
-    /* flex-shrink: 0; NO - Handled by container */
 }
-#finish-prep-btn:hover:not(:disabled) { background-color: #E67E00; box-shadow: 0 4px 8px rgba(255, 140, 0, 0.4); }
-#finish-prep-btn:disabled { background-color: #cccccc; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
+#finish-prep-btn:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+    box-shadow: 0 5px 10px rgba(255, 140, 0, 0.4);
+    transform: translateY(-2px);
+}
+#finish-prep-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    transform: none;
+}
+#finish-prep-btn:active:not(:disabled) {
+    transform: scale(0.98);
+    box-shadow: 0 1px 3px rgba(255, 140, 0, 0.3);
+}
 
 
-/* Clear Prep Button (Now inside prep-actions) */
+/* Clear Prep Button */
 #clear-prep-btn {
-     background-color: #616161;
-     font-size: 0.9em;
-     padding: 8px 15px;
-     /* margin-top: 8px; NO - Handled by gap */
-     font-weight: 400;
-     box-shadow: 0 2px 4px rgba(97, 97, 97, 0.2);
+     background-color: var(--color-text-medium); /* Use theme gray/brown */
+     font-size: 0.9rem;
+     padding: 0.6rem 1rem;
+     font-weight: 500;
+     box-shadow: var(--shadow-interactive);
      text-transform: none;
      cursor: pointer;
      border: none;
      color: white;
-     border-radius: 6px;
-     transition: background-color 0.2s ease, box-shadow 0.2s ease;
+     border-radius: var(--border-radius-medium);
+     transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 }
-#clear-prep-btn:hover { background-color: #424242; box-shadow: 0 3px 6px rgba(97, 97, 97, 0.3); }
+#clear-prep-btn:hover {
+    background-color: var(--color-background-dark);
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-1px);
+}
+#clear-prep-btn:active {
+    transform: scale(0.97);
+    box-shadow: none;
+}
 
 /* Finished Dish Area */
 #finished-dish-area {
     width: 90%;
-    margin-top: 15px; /* More space above queue */
+    margin-top: 1.5rem; /* More space above queue */
     text-align: center;
-     flex-shrink: 0;
+    flex-shrink: 0;
+}
+#finished-dish-area h3 {
+    margin-bottom: 0.5rem;
 }
 
-/* --- UPDATED: Finished Dish Display (Queue) --- */
+/* Finished Dish Display (Queue) */
 #finished-dish-display {
-    min-height: 45px;
+    min-height: 50px; /* Slightly taller */
     width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f0f0f0;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--border-radius-medium);
+    background-color: var(--color-background-alt);
     display: flex;
-    /* justify-content: center; NO - Let them align left */
     justify-content: flex-start; /* Align items to the start */
     align-items: center;
-    flex-wrap: wrap; /* Allow wrapping */
-    gap: 8px; /* Space between queued dishes */
-    margin-top: 5px;
-    padding: 8px; /* More padding */
+    flex-wrap: wrap;
+    gap: 0.6rem; /* Space between queued dishes */
+    margin-top: 0.5rem;
+    padding: 0.75rem; /* More padding */
 }
 
 .finished-dish-item {
-    font-size: 1.8em; /* Slightly smaller to fit more */
+    font-size: 1.8em;
     cursor: grab;
     user-select: none;
     display: inline-block;
-    background-color: #fff; /* Give items a background */
-    padding: 2px 6px;
-    border: 1px solid #bdbdbd;
-    border-radius: 4px;
-    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    /* No min-width needed, size based on content */
+    background-color: var(--color-background-card);
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--border-radius-small);
+    box-shadow: var(--shadow-interactive);
+    transition: box-shadow 0.2s ease, transform 0.1s ease;
 }
-.finished-dish-item:active { cursor: grabbing; }
+.finished-dish-item:active {
+    cursor: grabbing;
+    box-shadow: var(--shadow-soft);
+    transform: scale(0.95);
+}
 
 
 /* Sushi Belt */
 #sushi-belt-container {
     width: 95%;
-    min-height: 70px;
-    background-color: #555;
-    border: 2px solid #333;
-    border-radius: 4px;
+    min-height: 80px; /* Slightly taller belt */
+    background-color: var(--color-background-dark); /* Use theme dark color */
+    border: 2px solid #444; /* Darker border */
+    border-radius: var(--border-radius-medium);
     overflow: hidden;
-    margin: 15px auto 10px auto;
+    margin: 1.5rem auto 1rem auto; /* More margin */
     position: relative;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.4);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    transition: background-color 0.2s ease, border 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     flex-shrink: 0;
-    padding: 5px;
+    padding: 0.5rem;
 }
 #sushi-belt-container h3 { /* Belt Label */
-    font-size: 0.8em;
-    color: #eee;
-    margin: 0 0 5px 0;
-    font-weight: 300;
-    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+    color: #ddd; /* Lighter text on dark bg */
+    margin: 0 0 0.5rem 0;
+    font-weight: 400; /* Lighter weight */
+    letter-spacing: 0.8px;
     text-transform: uppercase;
 }
 #sushi-belt-container.drag-over {
-    background-color: #777;
-    border: 2px dashed #FFFFAA;
+    background-color: #6f6055; /* Slightly lighter dark brown */
+    border: 2px dashed var(--color-accent); /* Accent color for drop target */
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.4), 0 0 10px var(--color-accent); /* Add outer glow */
 }
 
 #sushi-belt-track {
     width: 100%;
-    height: 35px;
+    height: 40px; /* Taller track */
     display: flex;
     align-items: center;
     justify-content: space-around;
     white-space: nowrap;
 }
 .belt-placeholder {
-    font-size: 1.6em;
-    color: #bbb;
-    margin: 0 10px;
+    font-size: 1.8em; /* Larger placeholders */
+    color: #aaa; /* Slightly lighter gray */
+    margin: 0 0.8rem;
     user-select: none;
 }
 
 /* Message Area */
 #message-area {
-    margin-top: 15px;
-    font-weight: 400;
-    min-height: 25px;
-    font-size: 0.9em;
+    margin-top: 1rem;
+    font-weight: 500;
+    min-height: 30px;
+    font-size: 0.95rem;
     text-align: center;
     width: 90%;
-    padding: 4px;
-    border-radius: 4px;
+    padding: 0.5rem;
+    border-radius: var(--border-radius-small);
+    border: 1px solid transparent; /* Base border */
     flex-shrink: 0;
     line-height: 1.4;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
-#message-area.message-success { background-color: #E8F5E9; border: 1px solid #A5D6A7; }
-#message-area.message-error { background-color: #FFEBEE; border: 1px solid #EF9A9A; }
-#message-area.message-warning { background-color: #FFF3E0; border: 1px solid #FFCC80; }
-#message-area.message-info { background-color: #E3F2FD; border: 1px solid #90CAF9; }
+/* Use background and a left border for emphasis */
+#message-area.message-success { background-color: var(--color-success-bg); border-color: var(--color-success); border-left-width: 4px; color: #1B5E20; }
+#message-area.message-error { background-color: var(--color-error-bg); border-color: var(--color-error); border-left-width: 4px; color: #B71C1C; }
+#message-area.message-warning { background-color: var(--color-warning-bg); border-color: var(--color-warning); border-left-width: 4px; color: #E65100; }
+#message-area.message-info { background-color: var(--color-info-bg); border-color: var(--color-info); border-left-width: 4px; color: #0D47A1; }
 
 /* Customer Table Seats (and related) */
-/* Container for the list of customer seats is in layout.css */
-/* Individual customer seat/card */
 .customer-table-seat {
-    border: 1px solid #B8860B;
-    background-color: #fff;
-    border-radius: 8px; /* Slightly rounder */
-    padding: 10px;
-    margin: 8px; /* Spacing around each seat */
-    width: 180px; /* Fixed width for each seat */
-    min-height: 100px; /* Minimum height */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 1px solid var(--color-border-medium); /* Softer border */
+    background-color: var(--color-background-card);
+    border-radius: var(--border-radius-medium); /* Consistent rounding */
+    padding: 0.8rem;
+    /* margin: Managed by gap in container */
+    width: 200px; /* Slightly wider seats */
+    min-height: 120px; /* Taller seats */
+    box-shadow: var(--shadow-soft);
     display: flex;
-    flex-direction: column; /* Stack label and status */
-    align-items: center; /* Center content horizontally */
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     transition: background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
 }
-.customer-table-seat.state-eating {
-    background-color: #f0fff0; /* Light green background */
-}
 
 .customer-seat-label {
-    font-size: 1em;
+    font-size: 1rem;
     font-weight: 700;
-    color: #8B4513;
-    margin-bottom: 8px;
+    color: var(--color-primary-dark);
+    margin-bottom: 0.6rem;
     width: 100%;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 4px;
+    border-bottom: 1px solid var(--color-border-light); /* Lighter separator */
+    padding-bottom: 0.4rem;
 }
 
 .customer-status-display {
-    font-size: 0.9em;
-    min-height: 50px; /* Ensure space for content */
+    font-size: 0.9rem;
+    min-height: 60px; /* Taller status area */
     display: flex;
-    flex-direction: column; /* Stack name/visual or text */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-grow: 1; /* Allow status area to take remaining space */
+    flex-grow: 1;
     width: 100%;
+    padding-top: 0.3rem;
 }
 
 .customer-status-display .pondering-text {
     font-style: italic;
-    color: #777;
+    color: var(--color-text-light);
+    font-size: 0.9em;
 }
 
 .customer-status-display .order-details {
@@ -323,37 +369,67 @@
     text-align: center;
 }
 .customer-status-display .order-name {
-    font-size: 0.95em;
-    font-weight: 400;
-    color: #333;
-    display: block; /* Ensure it takes full width */
-    margin-bottom: 5px;
+    font-size: 1em; /* Slightly larger name */
+    font-weight: 500;
+    color: var(--color-text-dark);
+    display: block;
+    margin-bottom: 0.5rem;
 }
-
 .customer-status-display .order-visual {
-    font-size: 1.8em; /* Larger visual */
-    display: inline-block; /* Allows transforms/opacity */
-    margin-top: 5px;
-    transition: opacity 0.2s linear; /* Smooth fade out while eating */
+    font-size: 2rem; /* Much larger visual */
+    display: inline-block;
+    margin-top: 0.3rem;
+    transition: opacity 0.2s linear, transform 0.2s ease; /* Add transform transition */
 }
 
-
-/* Style for the party status area (inside #table-area) */
-#party-status {
-    color: #8B4513; /* Match other titles */
-    font-size: 1.1em; /* Slightly larger than seat label */
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-    margin-bottom: 10px; /* Space before seats */
-    width: 90%; /* Consistent width */
-    text-align: center;
-    font-weight: bold; /* Make it stand out */
+/* Customer States */
+.customer-table-seat.state-eating {
+    background-color: #f5fff5; /* Slightly different green tint */
+    border-color: var(--color-success);
 }
-
-/* Style for completed customer seat */
+.customer-table-seat.state-eating .order-visual {
+    /* Optional subtle animation while eating */
+     /* animation: pulse 1.5s infinite ease-in-out; */
+}
 .customer-table-seat.state-finished {
-    border-color: #4CAF50; /* Green border to indicate success */
-    background-color: #f7fff7; /* Very light green background */
-    opacity: 0.8; /* Slightly fade out to de-emphasize */
-    box-shadow: 0 1px 3px rgba(76, 175, 80, 0.3); /* Subtle green shadow */
+    border-color: var(--color-success);
+    background-color: var(--color-success-bg);
+    opacity: 0.85; /* Slightly less faded */
+    box-shadow: 0 1px 3px rgba(76, 175, 80, 0.3);
+}
+.customer-table-seat.state-finished .customer-status-display {
+    font-weight: 700;
+    color: var(--color-success);
+}
+.customer-table-seat.state-finished .customer-status-display span {
+     font-size: 1.1em;
+}
+
+
+/* Party Status Area */
+#party-status {
+    color: var(--color-primary-dark);
+    font-size: 1.1rem;
+    border-bottom: 1px solid var(--color-border-light);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    width: 90%;
+    text-align: center;
+    font-weight: 500;
+}
+#party-hunger-meter {
+    font-weight: 700;
+    margin-left: 0.3rem;
+}
+
+/* Score display inside UI area */
+#ui-area h2 {
+    color: var(--color-primary-dark); /* Make score title darker */
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+#score {
+    color: var(--color-accent); /* Use accent color for score value */
+    font-weight: 700;
+    font-size: 1.2em;
 }

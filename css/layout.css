@@ -1,16 +1,17 @@
-/* --- Main Layout Containers --- */
+/* --- Layout Containers --- */
 
 #game-area {
     display: flex;
     justify-content: space-around;
-    border: 2px solid #A0522D;
-    padding: 15px;
-    margin: 0 15px 15px 15px;
-    background-color: #FFFFFF;
-    width: calc(100% - 30px);
-    max-width: 950px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    gap: 1rem; /* Use gap for spacing */
+    border: 1px solid var(--color-border-medium); /* Softer border */
+    padding: 1.5rem;
+    margin: 0 1rem 1rem 1rem;
+    background-color: var(--color-background-card);
+    width: calc(100% - 2rem);
+    max-width: 1100px; /* Slightly wider max-width */
+    border-radius: var(--border-radius-large); /* Rounder corners */
+    box-shadow: var(--shadow-medium);
     flex-grow: 1;
     min-height: 0;
     overflow: hidden;
@@ -18,57 +19,55 @@
 }
 
 #prep-station, #ui-area {
-    border: 1px solid #D3C0A5;
-    padding: 10px;
-    margin: 5px;
+    border: 1px solid var(--color-border-light); /* Lighter internal border */
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 6px;
-    background-color: #FFF8DC;
+    border-radius: var(--border-radius-medium);
+    background-color: var(--color-background-section); /* Consistent light cream */
+    box-shadow: var(--shadow-soft);
     overflow-y: auto;
     overflow-x: hidden;
 }
 
 #prep-station {
-    flex-grow: 2;
-    flex-basis: 0;
-    background-color: #FFFACD;
-    min-width: 300px;
+    flex: 2 1 0; /* Same flex grow/shrink/basis */
+    min-width: 320px; /* Slightly adjusted min-width */
 }
 
 #ui-area {
-    flex-grow: 1;
-    flex-basis: 0;
-    background-color: #F5F5F5;
-    min-width: 180px;
+    flex: 1 1 0;
+    min-width: 200px;
+    background-color: var(--color-background-alt); /* Different background for UI panel */
 }
 
 #table-area {
-    border: 3px dashed #8B4513;
-    background-color: #FFF8DC;
-    padding: 15px;
-    margin: 20px auto;
+    border: 2px dashed var(--color-primary-medium); /* Keep dashed but use variable */
+    background-color: var(--color-background-section);
+    padding: 1.5rem;
+    margin: 1.5rem auto;
     width: 90%;
-    max-width: 700px; /* Wider max-width */
-    min-height: 150px; /* Increased min-height slightly */
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* Wider table area */
+    min-height: 160px;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-soft);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     flex-shrink: 0;
     overflow-y: auto;
-    max-height: 300px; /* Increased max height slightly */
+    max-height: 350px;
 }
 
 /* Container for the list of customer seats */
 #customer-orders-at-table {
     width: 100%;
     display: flex;
-    flex-wrap: wrap; /* Allow seats to wrap onto next line */
-    justify-content: center; /* Center seats horizontally */
-    align-items: flex-start; /* Align tops of seats */
-    padding: 0 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch; /* Align items to stretch vertically */
+    gap: 1rem; /* Use gap for spacing seats */
+    padding: 0.5rem 0;
 }

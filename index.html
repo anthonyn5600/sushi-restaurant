@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sushi Sprint!</title>
-    <!-- Link CSS Files -->
+    <title>Sushi Restaurant</title>
+    <!-- Link CSS Files (Order Matters!) -->
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/responsive.css">
-    <!-- OR if using the combined style.css: -->
-    <!-- <link rel="stylesheet" href="style.css"> -->
 </head>
 <body>
     <h1>Sushi Restaurant!</h1>
@@ -20,16 +18,17 @@
         <div id="prep-station">
             <h2 id="prep-station-title">Prep Station</h2>
 
-            <!-- NEW: Current Orders Display Area -->
+            <!-- Waiting Orders Display Area -->
             <div id="waiting-orders-area">
                 <h3>Waiting Orders:</h3>
                 <div id="current-orders-display">
-                     <!-- Orders will be populated by JS -->
                      <p>No orders waiting...</p>
                 </div>
             </div>
 
-            <div id="ingredient-buttons"></div>
+            <div id="ingredient-buttons">
+                <!-- Buttons populated by JS -->
+            </div>
             <div id="current-prep">
                 <h3>Preparing:</h3>
                 <div id="prep-display"></div>
@@ -41,7 +40,9 @@
 
                 <div id="finished-dish-area">
                     <h3>Ready Dishes Queue:</h3>
-                    <div id="finished-dish-display"></div>
+                    <div id="finished-dish-display">
+                        <!-- Dishes populated by JS -->
+                    </div>
                 </div>
             </div>
             <div id="sushi-belt-container">
@@ -54,11 +55,14 @@
         </div>
         <div id="ui-area">
             <h2>Score: <span id="score">0</span></h2>
-            <div id="message-area"></div>
+            <div id="message-area">
+                <!-- Messages populated by JS -->
+            </div>
         </div>
     </div>
 
     <div id="table-area">
+        <!-- Title moved from #ui-area for better context -->
         <h2>Customer Table</h2>
         <div id="party-status">
             Party Satisfaction: <span id="party-hunger-meter">-- / --</span>

@@ -1,74 +1,102 @@
-/* --- Media Queries --- */
-
-@media (max-width: 768px) {
-    h1 { font-size: 1.5em; margin-top: 10px; }
+/* --- Responsive Styles --- */
+@media (max-width: 960px) { /* Tablet breakpoint */
     #game-area {
         flex-direction: column;
-        align-items: center;
-        width: calc(100% - 20px);
-        margin: 0 10px 10px 10px;
-        padding: 10px;
-        overflow-y: auto;
-        flex-grow: 0;
-         min-height: 400px;
+        align-items: stretch; /* Stretch children to full width */
+        max-width: 95%;
+        padding: 1rem;
     }
-    #prep-station, #ui-area {
-        flex-basis: auto;
-        width: 95%;
+     #prep-station, #ui-area {
         min-width: unset;
-        margin: 8px 0;
-        overflow-y: visible;
-        flex-grow: 0;
-        min-height: unset;
+        width: 100%; /* Take full width */
+        margin-bottom: 1rem;
     }
-    #prep-station { order: 1; }
-    #ui-area { order: 2; }
+     #prep-station { order: 1; }
+     #ui-area { order: 2; }
 
      #table-area {
-        width: 95%; /* More width on mobile */
-        margin: 15px auto;
-        padding: 10px;
-        min-height: 120px;
-        max-height: 250px;
+        max-width: 95%;
+        padding: 1rem;
+        max-height: 300px;
     }
     .customer-table-seat {
-        width: 150px; /* Slightly smaller seats */
-        min-height: 90px;
-        margin: 5px;
-        padding: 8px;
+        width: 180px; /* Adjust seat width */
+        min-height: 110px;
     }
-    .customer-seat-label { font-size: 0.9em; }
-    .customer-status-display { min-height: 40px; font-size: 0.85em;}
-    .customer-status-display .order-visual { font-size: 1.6em; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) { /* Mobile breakpoint */
+    h1 { font-size: 1.5rem; margin-top: 1rem; margin-bottom: 0.8rem; }
+    #game-area {
+        width: calc(100% - 1rem);
+        margin: 0 0.5rem 0.5rem 0.5rem;
+        padding: 0.8rem;
+        min-height: auto; /* Allow shrinking */
+    }
+    #prep-station, #ui-area {
+        padding: 0.8rem;
+    }
      #table-area {
-         max-height: 200px;
+        width: calc(100% - 1rem);
+        margin: 1rem auto;
+        padding: 0.8rem;
+        min-height: 120px;
+        max-height: 280px;
+    }
+    #customer-orders-at-table {
+        gap: 0.5rem; /* Reduce gap */
+    }
+    .customer-table-seat {
+        width: 150px; /* Smaller seats again */
+        min-height: 100px;
+        padding: 0.6rem;
+    }
+    .customer-seat-label { font-size: 0.9rem; }
+    .customer-status-display { min-height: 50px; font-size: 0.85em;}
+    .customer-status-display .order-visual { font-size: 1.7rem; }
+    .ingredient-btn { padding: 0.6rem 0.8rem; font-size: 1rem; margin: 0.2rem;}
+    #prep-display { font-size: 1.4rem; min-height: 45px; }
+    .finished-dish-item { font-size: 1.6em; }
+    #finish-prep-btn { font-size: 0.9rem; padding: 0.7rem 1.2rem; }
+    #clear-prep-btn { font-size: 0.8rem; padding: 0.5rem 0.8rem; }
+    .prep-actions { gap: 0.8rem; }
+}
+
+@media (max-width: 420px) { /* Very Small Mobile */
+     h1 { font-size: 1.3rem; }
+     #table-area {
+         max-height: 240px;
      }
+     /* Stack seats vertically */
      .customer-table-seat {
-         width: calc(90% - 10px); /* Stack vertically */
-         margin: 5px auto;
+         width: calc(95% - 1rem); /* Almost full width */
+         margin: 0 auto; /* Center the single column */
      }
      #customer-orders-at-table {
-         justify-content: flex-start; /* Align single column left */
+         justify-content: flex-start;
      }
+     #prep-display { font-size: 1.3rem; }
+     #waiting-orders-area h3 { font-size: 0.9rem; }
+     #current-orders-display { font-size: 0.85rem; }
 }
 
-@media (max-height: 650px) {
-     h1 { font-size: 1.3em; margin-top: 5px; margin-bottom: 5px; padding-bottom: 3px; }
-    #game-area { padding: 10px; margin: 0 10px 10px 10px; min-height: 280px; }
-     #prep-station, #ui-area { padding: 8px; margin: 4px 0; }
-     #prep-station-title { font-size: 1.1em; }
-    .ingredient-btn { padding: 8px 10px; margin: 3px; font-size: 1em; }
-     #prep-display { font-size: 1.3em; min-height: 35px; }
-     .finished-dish-item { font-size: 1.8em; }
-     #finished-dish-display { min-height: 40px; }
-     #finish-prep-btn { font-size: 1em; padding: 10px 20px; margin-top: 8px;}
-     #sushi-belt-container { min-height: 60px; margin: 10px auto 5px auto; }
-     #sushi-belt-track { height: 30px; }
-     .belt-placeholder { font-size: 1.4em; }
-     #message-area { font-size: 0.85em; min-height: 20px; }
-     #table-area { min-height: 100px; padding: 8px; margin: 10px auto; max-height: 180px; }
-     #table-area h2 { font-size: 1em; margin-bottom: 8px; }
+/* Adjustments for very short screens */
+@media (max-height: 650px) and (min-width: 601px) { /* Avoid applying on small mobile where vertical space is already tight */
+     h1 { font-size: 1.4rem; margin-top: 1rem; margin-bottom: 0.5rem; }
+    #game-area { padding: 1rem; margin-bottom: 0.5rem; }
+     #prep-station, #ui-area { padding: 0.8rem; }
+     #prep-station-title { font-size: 1.2rem; }
+     .ingredient-btn { padding: 0.6rem 0.8rem; font-size: 1rem; }
+     #prep-display { font-size: 1.4rem; min-height: 45px; }
+     .finished-dish-item { font-size: 1.6em; }
+     #finished-dish-display { min-height: 45px; padding: 0.5rem;}
+     #finish-prep-btn { font-size: 0.9rem; padding: 0.7rem 1.2rem;}
+     #sushi-belt-container { min-height: 70px; margin: 1rem auto 0.5rem auto; }
+     #sushi-belt-track { height: 35px; }
+     .belt-placeholder { font-size: 1.6em; }
+     #message-area { font-size: 0.9rem; min-height: 25px; }
+     #table-area { min-height: 130px; padding: 1rem; margin: 1rem auto; max-height: 200px; }
+     #table-area h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+     .customer-table-seat { min-height: 100px; }
+     .customer-status-display .order-visual { font-size: 1.8rem; }
 }
