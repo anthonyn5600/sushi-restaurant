@@ -1,4 +1,4 @@
-# 🍣 Sushi Sprint! 🍣
+# 🍣 Sushi Restaurant! 🍣
 
 A fast-paced, drag-and-drop web game where you run a sushi prep station, fulfilling customer orders as quickly as possible! Prepare dishes, manage a queue, and serve entire parties before they get impatient.
 
