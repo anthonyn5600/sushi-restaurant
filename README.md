@@ -6,10 +6,6 @@ A fast-paced, drag-and-drop web game where you run a sushi prep station, fulfill
 
 [Play Sushi Sprint! Live Here!](https://anthonyn5600.github.io/sushi-restaurant/)
 
-**(Important: Replace the placeholder URL above with your actual GitHub Pages link after deploying!)**
-
----
-
 ## 🎮 How to Play
 
 1.  **Customers Arrive:** Parties of customers will arrive and take seats at the table.
