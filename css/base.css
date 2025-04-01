@@ -34,6 +34,7 @@
     --border-radius-small: 4px;
     --border-radius-medium: 8px;
     --border-radius-large: 12px;
+    --touch-target-min-size: 44px; /* Minimum size for touch targets */
 }
 
 *, *::before, *::after {
@@ -47,6 +48,7 @@ html {
     overflow-x: hidden;
     overflow-y: auto;
     font-size: 16px; /* Base font size */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 body {

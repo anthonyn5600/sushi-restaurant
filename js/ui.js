@@ -16,8 +16,7 @@ const customerOrdersContainer = document.getElementById('customer-orders-at-tabl
 const partyHungerMeterDisplay = document.getElementById('party-hunger-meter');
 const currentOrdersDisplay = document.getElementById('current-orders-display');
 
-// --- UI Update Functions --- (updateScoreDisplay, showMessage, updatePrepDisplay, addFinishedDishToDisplay, removeFinishedDishFromDisplay, clearFinishedDishDisplay, updateHungerMeterDisplay, updateCurrentOrdersDisplay, updateTableDisplay, updateCustomerSeatDisplay, renderCustomerStatus, createIngredientButtons - no changes needed in these)
-// ... (keep existing functions as they were in the previous step) ...
+// --- UI Update Functions --- (Most remain unchanged)
 function updateScoreDisplay() {
     scoreDisplay.textContent = score;
 }
@@ -25,25 +24,19 @@ function updateScoreDisplay() {
 function showMessage(text, type = "black") {
     messageArea.textContent = text;
     messageArea.className = 'message-area'; // Reset classes
-    messageArea.style.color = ''; // Clear inline color
-
+    // Apply type classes for styling
     if (type === 'green') messageArea.classList.add('message-success');
     else if (type === 'red') messageArea.classList.add('message-error');
     else if (type === 'orange') messageArea.classList.add('message-warning');
     else if (type === 'blue') messageArea.classList.add('message-info');
-
-     let colorValue = '#333';
-     if(type === 'green') colorValue = '#1B5E20';
-     else if(type === 'red') colorValue = '#B71C1C';
-     else if(type === 'orange') colorValue = '#E65100';
-     else if(type === 'blue') colorValue = '#0D47A1';
-     messageArea.style.color = colorValue;
+    // Note: Color is now primarily handled by CSS classes
 }
 
 function updatePrepDisplay() {
     prepDisplay.textContent = currentPreparation.map(name => INGREDIENTS[name]).join(' ');
 }
 
+// UPDATED: Add conditional tap listener for mobile
 function addFinishedDishToDisplay(finishedDishData) {
     // finishedDishData = { id: uniqueInstanceId, recipe: {...}, customerId: ... }
     const dishVisual = document.createElement('span');
@@ -55,8 +48,15 @@ function addFinishedDishToDisplay(finishedDishData) {
         visualText = INGREDIENTS['rice'] + ' ' + visualText;
     }
     dishVisual.textContent = visualText;
-    dishVisual.draggable = true;
-    dishVisual.addEventListener('dragstart', handleDishDragStart);
+
+    if (IS_MOBILE) {
+        dishVisual.draggable = false; // Disable drag on mobile
+        dishVisual.classList.add('mobile-tappable'); // Add class for potential styling
+        dishVisual.addEventListener('click', handleFinishedDishTap); // Add tap listener
+    } else {
+        dishVisual.draggable = true; // Ensure draggable on desktop
+        dishVisual.addEventListener('dragstart', handleDishDragStart); // Add drag listener
+    }
 
     finishedDishDisplay.appendChild(dishVisual);
 }
@@ -64,6 +64,12 @@ function addFinishedDishToDisplay(finishedDishData) {
 function removeFinishedDishFromDisplay(dishInstanceId) {
     const dishElement = finishedDishDisplay.querySelector(`.finished-dish-item[data-dish-instance-id="${dishInstanceId}"]`);
     if (dishElement) {
+        // Clean up event listeners before removing (important for mobile tap)
+        if (IS_MOBILE) {
+            dishElement.removeEventListener('click', handleFinishedDishTap);
+        } else {
+            dishElement.removeEventListener('dragstart', handleDishDragStart);
+        }
         dishElement.remove();
     } else {
         console.warn(`Could not find dish element with ID ${dishInstanceId} to remove from display.`);
@@ -71,7 +77,16 @@ function removeFinishedDishFromDisplay(dishInstanceId) {
 }
 
 function clearFinishedDishDisplay() {
-    finishedDishDisplay.innerHTML = '';
+    // Need to remove listeners from children before clearing innerHTML
+    Array.from(finishedDishDisplay.children).forEach(child => {
+        const dishInstanceId = child.dataset.dishInstanceId;
+        if(dishInstanceId) {
+            removeFinishedDishFromDisplay(dishInstanceId); // Use existing function which handles listener cleanup
+        } else {
+            child.remove(); // Remove other potential elements like placeholders if any
+        }
+    });
+     finishedDishDisplay.innerHTML = ''; // Clear completely after cleanup
 }
 
 function updateHungerMeterDisplay() {
@@ -139,8 +154,9 @@ function updateTableDisplay() {
         seatDiv.classList.add('customer-table-seat');
         seatDiv.dataset.customerId = customer.id;
         seatDiv.classList.add(`state-${customer.state}`);
-        if (customer.state === 'eating') seatDiv.classList.add('state-eating');
-        if (customer.state === 'finished') seatDiv.classList.add('state-finished');
+        // Add specific state classes if needed for more complex styling
+        // if (customer.state === 'eating') seatDiv.classList.add('state-eating'); // Already handled by state-eating
+        // if (customer.state === 'finished') seatDiv.classList.add('state-finished'); // Already handled by state-finished
 
         const labelH4 = document.createElement('h4');
         labelH4.classList.add('customer-seat-label');
@@ -166,10 +182,10 @@ function updateCustomerSeatDisplay(customerId) {
     if (seatDiv && customer) {
         const statusDiv = seatDiv.querySelector('.customer-status-display');
         if (statusDiv) {
-             seatDiv.className = 'customer-table-seat';
-             seatDiv.classList.add(`state-${customer.state}`);
-             if (customer.state === 'eating') seatDiv.classList.add('state-eating');
-             if (customer.state === 'finished') seatDiv.classList.add('state-finished');
+             // Reset classes and apply current state
+             seatDiv.className = 'customer-table-seat'; // Base class
+             seatDiv.classList.add(`state-${customer.state}`); // Add current state class
+
              renderCustomerStatus(statusDiv, customer);
         }
     }
@@ -178,7 +194,7 @@ function updateCustomerSeatDisplay(customerId) {
 }
 
 function renderCustomerStatus(statusDiv, customer) {
-    statusDiv.innerHTML = '';
+    statusDiv.innerHTML = ''; // Clear previous content
 
     switch (customer.state) {
         case 'pondering':
@@ -204,7 +220,7 @@ function renderCustomerStatus(statusDiv, customer) {
                  visualSpan.textContent = displayContent;
                  detailsDiv.appendChild(visualSpan);
                  statusDiv.appendChild(detailsDiv);
-             } else { statusDiv.textContent = "?"; }
+             } else { statusDiv.textContent = "?"; } // Should not happen if state is waiting
              break;
         case 'eating':
             if (customer.order) {
@@ -215,132 +231,251 @@ function renderCustomerStatus(statusDiv, customer) {
                     displayContent = INGREDIENTS['rice'] + ' ' + displayContent;
                 }
                 visualSpan.textContent = displayContent;
-                visualSpan.style.opacity = Math.max(0, 1 - (customer.eatingProgress / 100));
+                // Fade out effect based on progress
+                visualSpan.style.opacity = Math.max(0.1, 1 - (customer.eatingProgress / 100)); // Keep slightly visible
                 statusDiv.appendChild(visualSpan);
-            } else { statusDiv.textContent = "Eating (?)"; }
+            } else { statusDiv.textContent = "Eating (?)"; } // Should not happen
             break;
          case 'finished':
              const finishedText = document.createElement('span');
+             // Use textContent for safety, rely on CSS for styling
              finishedText.textContent = "✅ Satisfied!";
-             finishedText.style.color = 'green';
-             finishedText.style.fontWeight = 'bold';
+             // Styling moved to .state-finished .customer-status-display in CSS if needed
              statusDiv.appendChild(finishedText);
              break;
         default: statusDiv.textContent = "...";
     }
 }
 
+// UPDATED: Add conditional tap/drag listeners
 function createIngredientButtons() {
-    ingredientButtonsContainer.innerHTML = '';
+    ingredientButtonsContainer.innerHTML = ''; // Clear existing buttons
     for (const ingredientName in INGREDIENTS) {
         const button = document.createElement('button');
         button.classList.add('ingredient-btn');
         button.textContent = INGREDIENTS[ingredientName];
         button.dataset.ingredient = ingredientName;
-        button.draggable = true;
-        button.addEventListener('dragstart', handleIngredientDragStart);
+
+        if (IS_MOBILE) {
+            button.draggable = false; // Disable drag on mobile
+            button.addEventListener('click', handleIngredientTap); // Add tap listener
+        } else {
+            button.draggable = true; // Ensure draggable on desktop
+            button.addEventListener('dragstart', handleIngredientDragStart); // Add drag listener
+        }
+
         ingredientButtonsContainer.appendChild(button);
     }
 }
 
-
-// --- Animation Function ---
-// UPDATED: Remove ID from animatingDishIds Set on completion/cleanup
+// --- Animation Function --- (Remains the same, but called by tap handler too)
 function animateDishOrbit(dishVisualText, servedDishData) {
-    // servedDishData = { id: uniqueInstanceId, recipe: {...}, customerId: ... }
-    const dishInstanceId = servedDishData.id; // Get the ID for cleanup
+    const dishInstanceId = servedDishData.id;
 
     if (!gameArea || !tableArea || !dishVisualText || !servedDishData || !servedDishData.customerId) {
-        console.error("Missing elements or data for orbit animation.");
-        // If animation fails to start, remove from tracking
-        animatingDishIds.delete(dishInstanceId);
+        console.error("Missing elements or data for orbit animation:", { dishVisualText, servedDishData });
+        animatingDishIds.delete(dishInstanceId); // Clean up if animation can't start
         return;
     }
+
+    // Prevent duplicate animations for the same dish ID
+    if (document.querySelector(`.orbiting-dish[data-orbit-id="${dishInstanceId}"]`)) {
+        console.warn(`Orbit animation already exists for dish ID: ${dishInstanceId}`);
+        // Don't delete from animatingDishIds here, let the existing animation handle it.
+        return;
+    }
+
 
     const orbiter = document.createElement('div');
     orbiter.classList.add('orbiting-dish');
     orbiter.textContent = dishVisualText;
+    orbiter.dataset.orbitId = dishInstanceId; // Add ID for tracking/debugging
     document.body.appendChild(orbiter);
 
-    // ... [rest of the positioning and keyframe setup remains the same] ...
+
     const gameAreaRect = gameArea.getBoundingClientRect();
     const tableAreaRect = tableArea.getBoundingClientRect();
     const scrollX = window.scrollX || window.pageXOffset;
     const scrollY = window.scrollY || window.pageYOffset;
+
+    // Use finishedDishDisplay as the visual source for start point calculation
+    const queueRect = finishedDishDisplay.getBoundingClientRect();
+
+    // Get orbiter dimensions *after* adding content and appending to body (or set explicit size)
     const orbiterRect = orbiter.getBoundingClientRect();
     const offsetX = orbiterRect.width / 2;
     const offsetY = orbiterRect.height / 2;
 
-    const startX = gameAreaRect.left + gameAreaRect.width / 2 + scrollX - offsetX;
-    const startY = gameAreaRect.bottom + scrollY - offsetY - 10;
+    // Start position: near the finished dish queue visually
+    const startX = queueRect.left + queueRect.width / 2 + scrollX - offsetX;
+    // const startY = queueRect.bottom + scrollY - offsetY + 10; // Start slightly below the queue
+    const startY = queueRect.top + queueRect.height / 2 + scrollY - offsetY; // Start centered vertically in queue
 
-    const path = {
-        topLeft: { x: gameAreaRect.left + scrollX - offsetX + 20, y: gameAreaRect.top + scrollY - offsetY + 20 },
-        topRight: { x: gameAreaRect.right + scrollX - offsetX - 20, y: gameAreaRect.top + scrollY - offsetY + 20 },
-        bottomRight: { x: gameAreaRect.right + scrollX - offsetX - 20, y: gameAreaRect.bottom + scrollY - offsetY - 20 },
-    };
 
+    // Define path relative to the *game area* for orbit boundary
+     const path = {
+         topLeft: { x: gameAreaRect.left + scrollX - offsetX + 30, y: gameAreaRect.top + scrollY - offsetY + 30 },
+         topRight: { x: gameAreaRect.right + scrollX - offsetX - 30, y: gameAreaRect.top + scrollY - offsetY + 30 },
+         bottomRight: { x: gameAreaRect.right + scrollX - offsetX - 30, y: gameAreaRect.bottom + scrollY - offsetY - 30 },
+         bottomLeft: { x: gameAreaRect.left + scrollX - offsetX + 30, y: gameAreaRect.bottom + scrollY - offsetY - 30 },
+     };
+
+    // End position: center of the table area
     const endX = tableAreaRect.left + scrollX + tableAreaRect.width / 2 - offsetX;
     const endY = tableAreaRect.top + scrollY + tableAreaRect.height / 2 - offsetY;
 
     orbiter.style.position = 'absolute';
     orbiter.style.top = `${startY}px`;
     orbiter.style.left = `${startX}px`;
+    orbiter.style.opacity = '0'; // Start invisible
 
+    // Define Keyframes for a smoother, more circular-like path
     const keyframes = [
-        { transform: `translate(0, 0)`, offset: 0 },
-        { transform: `translate(${path.topLeft.x - startX}px, ${path.topLeft.y - startY}px)`, offset: 0.25 },
-        { transform: `translate(${path.topRight.x - startX}px, ${path.topRight.y - startY}px)`, offset: 0.5 },
-        { transform: `translate(${path.bottomRight.x - startX}px, ${path.bottomRight.y - startY}px)`, offset: 0.75 },
-        { transform: `translate(${endX - startX}px, ${endY - startY}px)`, offset: 1 }
+        { transform: `translate(0, 0) scale(0.8)`, opacity: 0, offset: 0 }, // Start point (fade in, small scale)
+        { transform: `translate(0, 0) scale(1)`, opacity: 1, offset: 0.05 }, // Fade in quickly
+        { transform: `translate(${path.topLeft.x - startX}px, ${path.topLeft.y - startY}px) scale(1.1)`, opacity: 1, offset: 0.25 }, // Move to top-left, slightly larger
+        { transform: `translate(${path.topRight.x - startX}px, ${path.topRight.y - startY}px) scale(1)`, opacity: 1, offset: 0.5 }, // Move to top-right
+        { transform: `translate(${path.bottomRight.x - startX}px, ${path.bottomRight.y - startY}px) scale(0.9)`, opacity: 1, offset: 0.75 }, // Move to bottom-right, slightly smaller
+        { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0.5)`, opacity: 0, offset: 1 } // Move to end point (fade out, small scale)
     ];
 
-    const options = { duration: 3000, easing: 'ease-in-out' };
 
-    // --- Animation Completion Handlers ---
+    const options = { duration: 3000, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }; // Smoother ease
+
     let fallbackTimeout;
 
+    const cleanupOrbiter = (reason = "unknown") => {
+         // Only remove from set if it's still considered animating
+         if (animatingDishIds.has(dishInstanceId)) {
+             // console.log(`Cleaning up orbiter ${dishInstanceId} (${reason}).`); // Debug log
+             animatingDishIds.delete(dishInstanceId); // << REMOVE ID FROM SET
+         } else {
+             // console.log(`Orbiter ${dishInstanceId} already cleaned up (${reason}).`); // Debug log
+         }
+         if (orbiter.parentNode) orbiter.parentNode.removeChild(orbiter); // Clean up element
+         clearTimeout(fallbackTimeout); // Clear self if called by fallback
+    };
+
     const handleServeSuccess = () => {
-        clearTimeout(fallbackTimeout); // Clear fallback
-        animatingDishIds.delete(dishInstanceId); // << REMOVE ID FROM SET
+        // console.log(`Animation finished for ${dishInstanceId}.`); // Debug log
         const customer = findCustomerById(servedDishData.customerId);
         if (customer && customer.state === 'waiting') {
              score += 10;
              updateScoreDisplay();
              showMessage(`Delivered ${servedDishData.recipe.name} to Customer ${customer.seatNumber}! (+10)`, "green");
-             startEating(servedDishData.customerId);
+             startEating(servedDishData.customerId); // Trigger customer state change
         } else {
-            console.warn(`Customer ${servedDishData.customerId} not found or not in 'waiting' state during delivery completion.`);
+            console.warn(`Customer ${servedDishData.customerId} not found or not in 'waiting' state (state: ${customer?.state}) during delivery completion.`);
             showMessage(`Customer ${customer?.seatNumber || servedDishData.customerId} missed the delivery!`, "orange");
+            // Potentially penalize score or handle differently?
         }
-        if (orbiter.parentNode) orbiter.parentNode.removeChild(orbiter); // Clean up element
-        // No need to set global isAnimating flag
+        cleanupOrbiter("onfinish");
     };
 
-    const cleanupOrbiter = () => {
-         // Only remove from set if it's still considered animating (prevents double removal if onfinish also fires)
-        if (animatingDishIds.has(dishInstanceId)) {
-             console.warn(`Orbiter animation for ${dishInstanceId} cleaned up via fallback timeout.`);
-             animatingDishIds.delete(dishInstanceId); // << REMOVE ID FROM SET
-         }
-        if (orbiter.parentNode) orbiter.parentNode.removeChild(orbiter); // Clean up element
-        clearTimeout(fallbackTimeout); // Clear self
-    };
 
     // --- Start Animation ---
+    // console.log(`Starting animation for ${dishInstanceId}`); // Debug log
     const animation = orbiter.animate(keyframes, options);
     animation.onfinish = handleServeSuccess;
-    // Pass the ID to the fallback cleanup context if needed, or rely on closure
-    fallbackTimeout = setTimeout(cleanupOrbiter, options.duration + 200);
+    animation.oncancel = () => cleanupOrbiter("oncancel"); // Handle potential cancellation
+
+    // Fallback timeout remains crucial
+    fallbackTimeout = setTimeout(() => {
+        // console.warn(`Orbiter animation for ${dishInstanceId} cleaned up via fallback timeout.`); // Debug log
+        cleanupOrbiter("fallback");
+    }, options.duration + 500); // Slightly longer timeout buffer
 }
 
 
-// --- Drag and Drop Handlers ---
+// --- NEW Mobile Tap Handlers ---
 
-// UPDATED: Ingredient D&D (Removed isAnimating check)
-function handleIngredientDragStart(event) {
+function handleIngredientTap(event) {
+    // Prevent adding if a dish is animating (optional, could allow queueing)
+    // if (animatingDishIds.size > 0) {
+    //     showMessage("Please wait for the current delivery!", "orange");
+    //     return;
+    // }
+
+    // Check if any customer is waiting (same logic as drop)
     const isCustomerWaiting = currentParty && currentParty.members.some(c => c.state === 'waiting');
-    if (!isCustomerWaiting) { // Only check if someone is waiting
+     if (!isCustomerWaiting) {
+         let reason = "No party members waiting for orders";
+         if (currentParty && currentParty.members.length > 0) reason = "Party members are thinking, eating, or finished";
+         if (!currentParty) reason = "No party at the table";
+        showMessage(`${reason}!`, "orange");
+        return;
+    }
+
+    // Add ingredient to prep
+    const ingredientName = event.target.dataset.ingredient;
+    if (ingredientName && INGREDIENTS[ingredientName]) {
+        currentPreparation.push(ingredientName);
+        updatePrepDisplay();
+        // Optional: Brief visual feedback on the button?
+    } else {
+        console.warn("Ingredient tap event occurred, but no valid ingredient data found.");
+    }
+}
+
+function handleFinishedDishTap(event) {
+    const tappedDishInstanceId = event.target.dataset.dishInstanceId;
+    if (!tappedDishInstanceId) {
+        console.error("Missing dish instance ID on tapped item:", event.target);
+        return;
+    }
+
+    // Check if THIS SPECIFIC DISH is already animating
+    if (animatingDishIds.has(tappedDishInstanceId)) {
+         showMessage("That dish is already being served!", "orange");
+         return;
+    }
+
+    // Find the dish data in the queue
+    const dishIndex = finishedDishes.findIndex(dish => dish.id === tappedDishInstanceId);
+
+    if (dishIndex !== -1) {
+        const servedDishData = finishedDishes[dishIndex]; // Get data { id, recipe, customerId }
+        const dishVisualElement = finishedDishDisplay.querySelector(`.finished-dish-item[data-dish-instance-id="${tappedDishInstanceId}"]`);
+        const servedDishVisualText = dishVisualElement ? dishVisualElement.textContent : '?';
+
+        // --- Critical Order: Same as handleBeltDrop ---
+        // 1. Add to animating Set BEFORE starting animation
+        animatingDishIds.add(tappedDishInstanceId);
+
+        // 2. Remove from the main queue array
+        finishedDishes.splice(dishIndex, 1);
+
+        // 3. Remove from the visual queue display (this also removes the tap listener)
+        removeFinishedDishFromDisplay(tappedDishInstanceId);
+        // --- End Critical Order ---
+
+
+        // 4. Start the animation
+        showMessage(`Serving ${servedDishData.recipe.name}...`, "blue");
+        animateDishOrbit(servedDishVisualText, servedDishData); // Reuse the same animation function
+
+    } else {
+        // This might happen if the dish was somehow removed between display and tap (unlikely but possible)
+        console.error(`Tapped dish instance ID ${tappedDishInstanceId} not found in finishedDishes queue.`);
+        showMessage("Error serving dish - not found in queue.", "red");
+        // Ensure ID is not lingering in animating set if we errored before adding
+        animatingDishIds.delete(tappedDishInstanceId);
+    }
+}
+
+
+// --- Desktop Drag and Drop Handlers --- (Largely unchanged, but ensure they aren't called on mobile if drag disabled)
+
+// Ingredient D&D (Drag Start)
+function handleIngredientDragStart(event) {
+    // Check if mobile flag is set - if so, prevent drag (shouldn't be needed if draggable=false)
+    if (IS_MOBILE) {
+        event.preventDefault();
+        return;
+    }
+
+    const isCustomerWaiting = currentParty && currentParty.members.some(c => c.state === 'waiting');
+    if (!isCustomerWaiting) {
          let reason = "No party members waiting for orders";
          if (currentParty && currentParty.members.length > 0) reason = "Party members are thinking, eating, or finished";
          if (!currentParty) reason = "No party at the table";
@@ -354,38 +489,51 @@ function handleIngredientDragStart(event) {
     event.dataTransfer.effectAllowed = 'copy';
 }
 
-// UPDATED: Ingredient D&D (Removed isAnimating check)
+// Ingredient D&D (Drag Over Prep Display)
 function handleIngredientDragOver(event) {
+    if (IS_MOBILE) return; // Ignore drag events on mobile
     event.preventDefault();
-    // Always allow drop effect over prep area if dragging ingredient
-    event.dataTransfer.dropEffect = 'copy';
-}
-
-// UPDATED: Ingredient D&D (Removed isAnimating check)
-function handleIngredientDragEnter(event) {
-    event.preventDefault();
-    // Always add visual feedback over prep area
-    if (event.target === prepDisplay) {
-       prepDisplay.classList.add('drag-over');
+    // Check if the dragged data is an ingredient (simple check)
+    if (event.dataTransfer.types.includes('text/plain')) {
+        event.dataTransfer.dropEffect = 'copy';
+    } else {
+        event.dataTransfer.dropEffect = 'none';
     }
 }
 
-// Ingredient D&D (No changes needed)
-function handleIngredientDragLeave(event) {
+// Ingredient D&D (Drag Enter Prep Display)
+function handleIngredientDragEnter(event) {
+     if (IS_MOBILE) return; // Ignore drag events on mobile
      event.preventDefault();
-     if (event.target === prepDisplay) {
-        prepDisplay.classList.remove('drag-over');
+     // Check if entering the prepDisplay itself and dragging text/plain
+     if (event.target === prepDisplay && event.dataTransfer.types.includes('text/plain')) {
+       prepDisplay.classList.add('drag-over');
      }
 }
 
-// UPDATED: Ingredient D&D (Removed isAnimating check)
+// Ingredient D&D (Drag Leave Prep Display)
+function handleIngredientDragLeave(event) {
+     if (IS_MOBILE) return; // Ignore drag events on mobile
+     event.preventDefault();
+     // Check if leaving the prepDisplay or moving to a child element
+      try { // Use try-catch for relatedTarget robustness
+          if (event.target === prepDisplay && !prepDisplay.contains(event.relatedTarget)) {
+             prepDisplay.classList.remove('drag-over');
+          }
+      } catch(e) { // Fallback if relatedTarget access fails
+          prepDisplay.classList.remove('drag-over');
+      }
+}
+
+// Ingredient D&D (Drop on Prep Display)
 function handleIngredientDrop(event) {
+    if (IS_MOBILE) return; // Ignore drag events on mobile
     event.preventDefault();
     prepDisplay.classList.remove('drag-over');
 
+    // Check conditions again on drop, just in case
     const isCustomerWaiting = currentParty && currentParty.members.some(c => c.state === 'waiting');
     if (!isCustomerWaiting) { showMessage("No party members waiting for an order!", "orange"); return; }
-    // Drop allowed
 
     const ingredientName = event.dataTransfer.getData('text/plain');
     if (ingredientName && INGREDIENTS[ingredientName]) {
@@ -393,11 +541,17 @@ function handleIngredientDrop(event) {
         updatePrepDisplay();
     } else {
         console.warn("Ingredient drop event occurred, but no valid ingredient data found.");
+        showMessage("Could not add ingredient from drop.", "orange");
     }
 }
 
-// UPDATED: Finished Dish Drag Start (Check specific dish animation status)
+// Finished Dish D&D (Drag Start)
 function handleDishDragStart(event) {
+    if (IS_MOBILE) { // Should not trigger if draggable=false, but good failsafe
+        event.preventDefault();
+        return;
+    }
+
     const dishInstanceId = event.target.dataset.dishInstanceId;
     if (!dishInstanceId) {
          console.error("Missing dish instance ID on dragged item:", event.target);
@@ -411,55 +565,68 @@ function handleDishDragStart(event) {
         return;
     }
 
-    // Drag allowed
-    event.dataTransfer.setData('application/sushi-dish-instance', dishInstanceId);
-    event.dataTransfer.effectAllowed = 'move';
-
+    // Find dish data to potentially add more info if needed (currently just ID)
     const dishData = finishedDishes.find(d => d.id === dishInstanceId);
     if (!dishData) {
          console.error(`Dish data for instance ID ${dishInstanceId} not found in queue.`);
          event.preventDefault();
          return;
     }
+
+    // Set the data - use a custom type for clarity
+    event.dataTransfer.setData('application/sushi-dish-instance', dishInstanceId);
+    event.dataTransfer.effectAllowed = 'move';
+
+    // Optional: Add visual cue to the dragged element
+    // event.target.style.opacity = '0.5';
 }
 
-// UPDATED: Belt Drag Over (Only check data type)
+// Finished Dish D&D (Drag Over Belt)
  function handleBeltDragOver(event) {
+    if (IS_MOBILE) return; // Ignore drag events on mobile
     event.preventDefault();
-    // Allow drop visual effect if it's a dish instance, regardless of animation state
+    // Allow drop visual effect only if it's a dish instance
     if (event.dataTransfer.types.includes('application/sushi-dish-instance')) {
         event.dataTransfer.dropEffect = 'move';
     } else {
-        event.dataTansfer.dropEffect = 'none'; // Typo corrected
+        event.dataTransfer.dropEffect = 'none';
     }
 }
-// UPDATED: Belt Drag Enter (Only check data type)
+
+// Finished Dish D&D (Drag Enter Belt)
 function handleBeltDragEnter(event) {
+    if (IS_MOBILE) return; // Ignore drag events on mobile
     event.preventDefault();
-    // Allow visual feedback if it's a dish instance
-    if (event.dataTransfer.types.includes('application/sushi-dish-instance')) {
+    // Allow visual feedback only if it's a dish instance
+    if (event.dataTransfer.types.includes('application/sushi-dish-instance') && event.currentTarget === sushiBeltContainer) {
         sushiBeltContainer.classList.add('drag-over');
     }
 }
-// Belt Drag Leave - No change needed
+
+// Finished Dish D&D (Drag Leave Belt)
 function handleBeltDragLeave(event) {
+    if (IS_MOBILE) return; // Ignore drag events on mobile
     event.preventDefault();
-    // Use try-catch for broader browser compatibility with relatedTarget
+    // More robust check for leaving the container itself
     try {
-        if (!sushiBeltContainer.contains(event.relatedTarget)) {
+        if (event.currentTarget === sushiBeltContainer && !sushiBeltContainer.contains(event.relatedTarget)) {
             sushiBeltContainer.classList.remove('drag-over');
         }
     } catch (e) {
-        // Fallback if relatedTarget isn't supported or is null/undefined
-        sushiBeltContainer.classList.remove('drag-over');
+        sushiBeltContainer.classList.remove('drag-over'); // Fallback
     }
 }
 
 
-// UPDATED: Belt Drop (Check specific dish animation status, add to Set)
+// Finished Dish D&D (Drop on Belt)
 function handleBeltDrop(event) {
+    if (IS_MOBILE) return; // Ignore drag events on mobile
     event.preventDefault();
     sushiBeltContainer.classList.remove('drag-over');
+    // Optional: Reset opacity if changed on drag start
+    // const draggedElement = document.querySelector(`.finished-dish-item[data-dish-instance-id="${droppedDishInstanceId}"]`);
+    // if (draggedElement) draggedElement.style.opacity = '1';
+
 
     const droppedDishInstanceId = event.dataTransfer.getData('application/sushi-dish-instance');
     if (!droppedDishInstanceId) {
@@ -467,7 +634,7 @@ function handleBeltDrop(event) {
         return;
     }
 
-    // Check if THIS SPECIFIC DISH is already animating
+    // Check if THIS SPECIFIC DISH is already animating (redundant check, but safe)
     if (animatingDishIds.has(droppedDishInstanceId)) {
          showMessage("That dish is already being served!", "orange");
          return;
@@ -481,27 +648,26 @@ function handleBeltDrop(event) {
         const dishVisualElement = finishedDishDisplay.querySelector(`.finished-dish-item[data-dish-instance-id="${droppedDishInstanceId}"]`);
         const servedDishVisualText = dishVisualElement ? dishVisualElement.textContent : '?';
 
-        // --- Critical Order ---
+        // --- Critical Order: Same as handleFinishedDishTap ---
         // 1. Add to animating Set BEFORE starting animation
         animatingDishIds.add(droppedDishInstanceId);
 
         // 2. Remove from the main queue array
         finishedDishes.splice(dishIndex, 1);
 
-        // 3. Remove from the visual queue display
+        // 3. Remove from the visual queue display (this also removes drag listener)
         removeFinishedDishFromDisplay(droppedDishInstanceId);
         // --- End Critical Order ---
 
 
         // 4. Start the animation
         showMessage(`Serving ${servedDishData.recipe.name}...`, "blue");
-        animateDishOrbit(servedDishVisualText, servedDishData); // This function will handle removing the ID from the Set on completion
+        animateDishOrbit(servedDishVisualText, servedDishData); // Reuse animation
 
     } else {
-        // This might happen if the dish was somehow removed between drag start and drop
+        // Dish not found - might have been tapped/served simultaneously?
         console.error(`Dropped dish instance ID ${droppedDishInstanceId} not found in finishedDishes queue.`);
         showMessage("Error serving dish - not found in queue.", "red");
-        // Ensure ID is not lingering in animating set if we errored before adding
-        animatingDishIds.delete(droppedDishInstanceId);
+        animatingDishIds.delete(droppedDishInstanceId); // Clean up just in case
     }
 }

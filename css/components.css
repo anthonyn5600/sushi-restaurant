@@ -5,7 +5,6 @@
     font-weight: 700;
     color: var(--color-primary-dark);
     font-size: 1.4rem; /* Slightly larger */
-    min-height: auto; /* Remove min-height */
     line-height: 1.3;
     border-bottom: 2px solid var(--color-primary-medium); /* Solid underline */
     padding-bottom: 0.4rem;
@@ -34,13 +33,20 @@
 }
 #current-orders-display {
     min-height: 40px;
-    max-height: 100px; /* Limit height */
+    max-height: 120px; /* Increased max-height slightly */
     overflow-y: auto;
     padding: 0.5rem;
     background-color: var(--color-background-alt);
     border-radius: var(--border-radius-small);
     font-size: 0.9rem;
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: var(--color-primary-light) var(--color-background-alt); /* For Firefox */
 }
+/* Webkit scrollbar styles */
+#current-orders-display::-webkit-scrollbar { width: 6px; }
+#current-orders-display::-webkit-scrollbar-track { background: var(--color-background-alt); border-radius: 3px;}
+#current-orders-display::-webkit-scrollbar-thumb { background-color: var(--color-primary-light); border-radius: 3px; }
+
 #current-orders-display p { /* Placeholder text */
     color: var(--color-text-light);
     font-style: italic;
@@ -78,12 +84,16 @@
     margin-bottom: 1rem;
     width: 100%;
     flex-shrink: 0;
+    display: flex; /* Use flexbox for wrapping */
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem; /* Gap between buttons */
 }
 
 .ingredient-btn {
-    display: inline-block;
+    /* display: inline-block; No longer needed with flex */
     padding: 0.7rem 1rem; /* Adjusted padding */
-    margin: 0.3rem;
+    margin: 0; /* Margin handled by gap */
     font-size: 1.1rem;
     font-weight: 500; /* Slightly bolder */
     cursor: pointer;
@@ -94,6 +104,12 @@
     box-shadow: var(--shadow-interactive);
     transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
     user-select: none;
+    min-height: var(--touch-target-min-size); /* Ensure min touch height */
+    min-width: var(--touch-target-min-size); /* Ensure min touch width */
+    display: inline-flex; /* Center content */
+    align-items: center;
+    justify-content: center;
+    line-height: 1; /* Prevent extra height from line */
 }
 .ingredient-btn:hover {
     background-color: #f0f0f0;
@@ -120,6 +136,7 @@
     min-height: 50px; /* Taller display */
     border: 1px solid var(--color-border-light); /* Soft solid border */
     width: 90%;
+    max-width: 400px; /* Limit width */
     margin-top: 0.5rem;
     padding: 0.5rem;
     background-color: var(--color-background-alt);
@@ -130,6 +147,7 @@
     align-items: center;
     justify-content: center;
     transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    word-break: break-all; /* Allow long emoji strings to wrap if necessary */
 }
 #prep-display.drag-over {
     border-color: var(--color-success); /* Use success color */
@@ -140,6 +158,7 @@
 /* Prep Actions Container */
 .prep-actions {
     display: flex;
+    flex-wrap: wrap; /* Allow buttons to wrap on small screens */
     justify-content: center;
     align-items: center;
     gap: 1rem; /* Consistent gap */
@@ -161,6 +180,11 @@
     background-color: var(--color-accent);
     box-shadow: 0 3px 6px rgba(255, 140, 0, 0.3); /* Slightly stronger shadow */
     cursor: pointer;
+    min-height: var(--touch-target-min-size); /* Ensure min touch height */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 #finish-prep-btn:hover:not(:disabled) {
     background-color: var(--color-accent-hover);
@@ -193,6 +217,11 @@
      color: white;
      border-radius: var(--border-radius-medium);
      transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+     min-height: calc(var(--touch-target-min-size) * 0.9); /* Slightly smaller allowed */
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     line-height: 1;
 }
 #clear-prep-btn:hover {
     background-color: var(--color-background-dark);
@@ -219,13 +248,16 @@
 #finished-dish-display {
     min-height: 50px; /* Slightly taller */
     width: 100%;
+    max-width: 400px; /* Limit width */
+    margin-left: auto;
+    margin-right: auto;
     border: 1px solid var(--color-border-light);
     border-radius: var(--border-radius-medium);
     background-color: var(--color-background-alt);
     display: flex;
     justify-content: flex-start; /* Align items to the start */
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Allow wrapping */
     gap: 0.6rem; /* Space between queued dishes */
     margin-top: 0.5rem;
     padding: 0.75rem; /* More padding */
@@ -235,13 +267,20 @@
     font-size: 1.8em;
     cursor: grab;
     user-select: none;
-    display: inline-block;
+    display: inline-block; /* Use inline-block */
     background-color: var(--color-background-card);
     padding: 0.2rem 0.6rem;
     border: 1px solid var(--color-border-light);
     border-radius: var(--border-radius-small);
     box-shadow: var(--shadow-interactive);
     transition: box-shadow 0.2s ease, transform 0.1s ease;
+    min-height: calc(var(--touch-target-min-size) * 0.9); /* Ensure touchable */
+    line-height: 1; /* Adjust line height for vertical centering if needed */
+    text-align: center;
+}
+/* Style for mobile tap interaction (applied via JS or CSS if JS sets a class) */
+.finished-dish-item.mobile-tappable {
+    cursor: pointer; /* Indicate tappable on mobile */
 }
 .finished-dish-item:active {
     cursor: grabbing;
@@ -253,6 +292,7 @@
 /* Sushi Belt */
 #sushi-belt-container {
     width: 95%;
+    max-width: 450px; /* Limit width */
     min-height: 80px; /* Slightly taller belt */
     background-color: var(--color-background-dark); /* Use theme dark color */
     border: 2px solid #444; /* Darker border */
@@ -312,12 +352,13 @@
     flex-shrink: 0;
     line-height: 1.4;
     transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    word-wrap: break-word; /* Ensure long messages wrap */
 }
 /* Use background and a left border for emphasis */
-#message-area.message-success { background-color: var(--color-success-bg); border-color: var(--color-success); border-left-width: 4px; color: #1B5E20; }
-#message-area.message-error { background-color: var(--color-error-bg); border-color: var(--color-error); border-left-width: 4px; color: #B71C1C; }
-#message-area.message-warning { background-color: var(--color-warning-bg); border-color: var(--color-warning); border-left-width: 4px; color: #E65100; }
-#message-area.message-info { background-color: var(--color-info-bg); border-color: var(--color-info); border-left-width: 4px; color: #0D47A1; }
+#message-area.message-success { background-color: var(--color-success-bg); border-color: var(--color-success); border-left: 4px solid var(--color-success); color: #1B5E20; }
+#message-area.message-error { background-color: var(--color-error-bg); border-color: var(--color-error); border-left: 4px solid var(--color-error); color: #B71C1C; }
+#message-area.message-warning { background-color: var(--color-warning-bg); border-color: var(--color-warning); border-left: 4px solid var(--color-warning); color: #E65100; }
+#message-area.message-info { background-color: var(--color-info-bg); border-color: var(--color-info); border-left: 4px solid var(--color-info); color: #0D47A1; }
 
 /* Customer Table Seats (and related) */
 .customer-table-seat {
@@ -374,12 +415,14 @@
     color: var(--color-text-dark);
     display: block;
     margin-bottom: 0.5rem;
+    word-wrap: break-word; /* Ensure long names wrap */
 }
 .customer-status-display .order-visual {
     font-size: 2rem; /* Much larger visual */
     display: inline-block;
     margin-top: 0.3rem;
     transition: opacity 0.2s linear, transform 0.2s ease; /* Add transform transition */
+    word-break: keep-all; /* Try to keep emojis together */
 }
 
 /* Customer States */
