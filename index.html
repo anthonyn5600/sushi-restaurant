@@ -4,78 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sushi Restaurant</title>
-    <!-- Link CSS Files (Order Matters!) -->
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
+    <!-- Link Single Combined CSS File -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
     <h1>Sushi Restaurant!</h1>
 
-    <div id="game-area">
-        <div id="prep-station">
-            <h2 id="prep-station-title">Prep Station</h2>
+    <!-- Mobile Score Overlay (Positioned Fixed via CSS) -->
+    <div id="mobile-score-overlay" aria-live="polite">Score: <span id="score-value-mobile">0</span></div>
 
-            <!-- Waiting Orders Display Area -->
-            <div id="waiting-orders-area">
-                <h3>Waiting Orders:</h3>
-                <div id="current-orders-display">
-                     <p>No orders waiting...</p>
-                </div>
-            </div>
+    <!-- Wrapper for Mobile No-Scroll Layout -->
+    <div class="mobile-layout-wrapper">
 
-            <div id="ingredient-buttons">
-                <!-- Buttons populated by JS -->
-            </div>
-            <div id="current-prep">
-                <h3>Preparing:</h3>
-                <div id="prep-display"></div>
+        <!-- Mobile Message Area (Displayed via CSS Media Query) -->
+        <div id="message-area-mobile" class="mobile-only-message" role="log" aria-live="polite">
+            <!-- Mobile messages populated by JS -->
+        </div>
 
-                <div class="prep-actions">
-                    <button id="finish-prep-btn">Finish Prep</button>
-                    <button id="clear-prep-btn">Clear Prep</button>
-                </div>
+        <!-- Main Game Area: Contains Prep Station and UI Area on Desktop -->
+        <!-- Note: On mobile, UI Area is hidden, and Table Area is nested within Prep Station's flex flow -->
+        <main id="game-area" role="main">
 
-                <div id="finished-dish-area">
-                    <h3>Ready Dishes Queue:</h3>
-                    <div id="finished-dish-display">
-                        <!-- Dishes populated by JS -->
+            <section id="prep-station" aria-labelledby="prep-station-title prep-station-title-mobile">
+                <!-- Prep Station Titles (Desktop vs Mobile visibility controlled by CSS) -->
+                <h2 id="prep-station-title" class="desktop-only-title">Prep Station</h2>
+                <h2 id="prep-station-title-mobile" class="mobile-only-title">Prep Station</h2>
+
+                <!-- Grouping Div for Mobile Flex Layout: Top Section -->
+                <div class="prep-section prep-top">
+                    <section id="waiting-orders-area" aria-labelledby="waiting-orders-title">
+                        <h3 id="waiting-orders-title">Waiting Orders:</h3>
+                        <div id="current-orders-display">
+                             <p>No orders waiting...</p>
+                        </div>
+                    </section>
+
+                    <div id="ingredient-buttons" role="toolbar" aria-label="Ingredients">
+                        <!-- Ingredient buttons populated by JS -->
                     </div>
-                </div>
-            </div>
-            <div id="sushi-belt-container">
-                 <h3>Drop Dish Here to Serve</h3>
-                <div id="sushi-belt-track">
-                    <span class="belt-placeholder">🍽️</span>
-                    <span class="belt-placeholder">🥢</span>
-                </div>
-            </div>
-        </div>
-        <div id="ui-area">
-            <h2>Score: <span id="score">0</span></h2>
-            <div id="message-area">
-                <!-- Messages populated by JS -->
-            </div>
-        </div>
-    </div>
+                </div> <!-- End .prep-top -->
 
-    <div id="table-area">
-        <!-- Title moved from #ui-area for better context -->
-        <h2>Customer Table</h2>
-        <div id="party-status">
-            Party Satisfaction: <span id="party-hunger-meter">-- / --</span>
-        </div>
-        <div id="customer-orders-at-table">
-            <!-- Customer seats will be populated by JS -->
-        </div>
-    </div>
+                <!-- Grouping Div for Mobile Flex Layout: Middle Section -->
+                <div class="prep-section prep-middle">
+                    <section id="current-prep" aria-labelledby="current-prep-title">
+                        <h3 id="current-prep-title">Preparing:</h3>
+                        <div id="prep-display" role="log" aria-live="polite">
+                            <!-- Current preparation visual populated by JS -->
+                        </div>
+                        <div class="prep-actions">
+                            <button id="finish-prep-btn">Finish Prep</button>
+                            <button id="clear-prep-btn">Clear Prep</button>
+                        </div>
+                    </section>
+                </div> <!-- End .prep-middle -->
+
+                 <!-- Grouping Div for Mobile Flex Layout: Bottom Section -->
+                <div class="prep-section prep-bottom">
+                    <section id="finished-dish-area" aria-labelledby="finished-dish-title">
+                        <h3 id="finished-dish-title">Ready Dishes Queue:</h3>
+                        <div id="finished-dish-display">
+                            <!-- Finished dishes populated by JS -->
+                        </div>
+                    </section>
+
+                    <section id="sushi-belt-container" aria-labelledby="sushi-belt-title" role="region">
+                        <h3 id="sushi-belt-title">Drop Dish Here to Serve</h3>
+                        <div id="sushi-belt-track">
+                            <span class="belt-placeholder" aria-hidden="true">🍽️</span>
+                            <span class="belt-placeholder" aria-hidden="true">🥢</span>
+                        </div>
+                    </section>
+                </div> <!-- End .prep-bottom -->
+
+                <!-- Customer Table Area (Moved here structurally for mobile layout) -->
+                <!-- CSS media queries control its display and positioning -->
+                <section id="table-area" aria-labelledby="customer-table-title">
+                    <h2 id="customer-table-title">Customer Table</h2>
+                    <div id="party-status" aria-live="polite">
+                        Party Satisfaction: <span id="party-hunger-meter">-- / --</span>
+                    </div>
+                    <div id="customer-orders-at-table">
+                        <!-- Customer seats will be populated by JS -->
+                    </div>
+                </section>
+
+            </section> <!-- End #prep-station -->
+
+            <!-- UI Area (Score & Messages for Desktop) -->
+            <aside id="ui-area" role="complementary" aria-labelledby="ui-area-title">
+                 <h2 id="ui-area-title">Score: <span id="score" aria-live="polite">0</span></h2>
+                 <div id="message-area" role="log" aria-live="polite">
+                     <!-- Desktop messages populated by JS -->
+                 </div>
+            </aside> <!-- End #ui-area -->
+
+        </main> <!-- End #game-area -->
+
+    </div> <!-- End .mobile-layout-wrapper -->
 
     <!-- Load JavaScript Files (Order is IMPORTANT) -->
-    <script src="js/config.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/customer.js"></script>
-    <script src="js/game.js"></script>
+    <script src="js/config.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/customer.js" defer></script>
+    <script src="js/game.js" defer></script>
 </body>
 </html>
