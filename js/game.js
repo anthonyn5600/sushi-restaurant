@@ -2,7 +2,7 @@
 let score = 0;
 let currentParty = null;
 let currentPreparation = [];
-let finishedDishes = []; // Queue of { id, recipe, customerId }
+let finishedDishes = []; // Queue of { id, recipe } -- customerId removed here initially
 let animatingDishIds = new Set(); // Tracks IDs of dishes currently animating (orbiting)
 let activePonderTimers = {}; // Tracks setTimeout IDs for customer pondering
 let activeEatingTimers = {}; // Tracks setInterval IDs for customer eating progress
@@ -124,69 +124,66 @@ document.addEventListener('DOMContentLoaded', () => {
         showMessage("Preparation ingredients cleared.", "black");
     }
 
-    // Handles clicking the "Finish Prep" button
+    // Handles clicking the "Finish Prep" button - REVISED LOGIC
     function handleFinishPrepClick() {
-        if (!currentParty || currentParty.members.length === 0) { showMessage("No party at the table!", "orange"); return; }
-        const waitingCustomers = currentParty.members.filter(c => c.state === 'waiting');
-        if (waitingCustomers.length === 0) { showMessage("No one in the party is waiting for an order!", "orange"); return; }
+        // Basic checks
         if (currentPreparation.length === 0) { showMessage("Prepare something first!", "orange"); return; }
-
+        // Allow prep even if no party is present or waiting
+        // if (!currentParty || currentParty.members.length === 0) { showMessage("No party at the table!", "orange"); return; }
+    
+        const prepIngredients = [...currentPreparation]; // Keep the original order for visual later if needed
         const prepSorted = [...currentPreparation].sort().join(',');
-        let matchedCustomer = null;
-        let dishAlreadyQueued = false;
-
-        for (const customer of waitingCustomers) {
-            if (customer.order && customer.order.ingredients) {
-                const orderSorted = [...customer.order.ingredients].sort().join(',');
-                if (prepSorted === orderSorted) {
-                    const alreadyQueued = finishedDishes.some(dish => dish.customerId === customer.id);
-                    // const alreadyAnimating = ... // Animating check is handled by deliver button now
-
-                    if (!alreadyQueued) {
-                         matchedCustomer = customer;
-                         break;
-                    } else {
-                        dishAlreadyQueued = true;
-                        console.log(`Dish for Customer ${customer.seatNumber} already in queue.`);
-                    }
-                }
+        let matchedRecipe = null;
+        let dishRecipeObject = null; // This will hold the object to be added to the queue
+    
+        // Check against ALL known recipes
+        for (const recipe of RECIPES) {
+            const recipeIngredientsSorted = [...recipe.ingredients].sort().join(',');
+            if (prepSorted === recipeIngredientsSorted) {
+                matchedRecipe = recipe;
+                break;
             }
         }
-
-        if (matchedCustomer) {
-            const dishInstanceId = generateUniqueId();
-            const newFinishedDish = {
-                id: dishInstanceId,
-                recipe: matchedCustomer.order,
-                customerId: matchedCustomer.id
-            };
-
-            finishedDishes.push(newFinishedDish); // Add to the logical queue
-            addFinishedDishToDisplay(newFinishedDish); // Add visually & updates button state
-
-            currentPreparation = []; // Clear the prep area
-            updatePrepDisplay();
-
-            showMessage(`Dish for Customer ${matchedCustomer.seatNumber} added to queue!`, "blue");
+    
+        const dishInstanceId = generateUniqueId();
+    
+        if (matchedRecipe) {
+            // Valid recipe prepared
+            dishRecipeObject = matchedRecipe; // Use the actual recipe object
+            showMessage(`Prepared ${dishRecipeObject.name}! Added to queue.`, "blue");
         } else {
-             if(dishAlreadyQueued) {
-                 showMessage("Dish prepared matches an order already in the queue!", "orange");
-             } else {
-                 score -= 2;
-                 if (score < 0) score = 0;
-                 updateScoreDisplay();
-                 showMessage("Wrong ingredients for anyone waiting! (-2 points)", "red");
-                 prepDisplay.classList.add('prep-error-flash');
-                 setTimeout(() => prepDisplay.classList.remove('prep-error-flash'), 500);
-             }
+            // Invalid ingredient combination - Create an "Unknown Dish" object
+            const visualString = prepIngredients.map(name => INGREDIENTS[name] || '?').join(' '); // Get visuals of ingredients used
+            dishRecipeObject = {
+                name: "Unknown Dish",
+                ingredients: prepIngredients, // Store the actual ingredients used
+                visual: `❓ ${visualString}` // Mark as unknown + show ingredients
+            };
+            showMessage(`Prepared an Unknown Dish! Added to queue.`, "orange"); // Use warning color
+            // No immediate penalty here anymore
         }
+    
+        // Add the dish (either valid recipe or unknown) to the queue
+        const newFinishedDish = {
+            id: dishInstanceId,
+            recipe: dishRecipeObject // Contains name, ingredients, visual
+        };
+    
+        finishedDishes.push(newFinishedDish); // Add to the logical queue
+        addFinishedDishToDisplay(newFinishedDish); // Add visually & updates button state
+    
+        currentPreparation = []; // Clear the prep area
+        updatePrepDisplay();
+        prepDisplay.classList.remove('prep-error-flash'); // Ensure no error flash lingers
+    
     }
+
 
     // --- Initial Event Listeners (for non-dynamic elements) ---
     finishPrepButton.addEventListener('click', handleFinishPrepClick);
     clearPrepButton.addEventListener('click', clearPreparation);
     deliverFoodButton.addEventListener('click', handleDeliverFoodClick); // ADD listener for new button
-
+    deliverAllButton.addEventListener('click', handleDeliverAllClick);
     // --- Start Game ---
     initGame();
 

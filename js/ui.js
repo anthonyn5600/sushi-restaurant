@@ -1,5 +1,8 @@
 // --- UI Update Functions & DOM References ---
 
+// --- Constants ---
+const DELIVER_ALL_STAGGER_MS = 300; // Delay between starting each animation in Deliver All (in milliseconds)
+
 // DOM Element References
 const prepStationTitle = document.getElementById('prep-station-title');
 const ingredientButtonsContainer = document.getElementById('ingredient-buttons');
@@ -15,7 +18,8 @@ const tableArea = document.getElementById('table-area');
 const customerOrdersContainer = document.getElementById('customer-orders-at-table');
 const partyHungerMeterDisplay = document.getElementById('party-hunger-meter');
 const currentOrdersDisplay = document.getElementById('current-orders-display');
-const deliverFoodButton = document.getElementById('deliver-food-btn'); // ADDED
+const deliverFoodButton = document.getElementById('deliver-food-btn'); // Reference for "Deliver Next"
+const deliverAllButton = document.getElementById('deliver-all-btn'); // ADDED Reference for "Deliver All"
 
 // --- UI Update Functions ---
 function updateScoreDisplay() {
@@ -51,36 +55,110 @@ function updatePrepDisplay() {
     prepDisplay.textContent = currentPreparation.map(name => INGREDIENTS[name]).join(' ');
 }
 
+// --- UPDATED: Add click listener and title, handles unknown dish visual ---
 function addFinishedDishToDisplay(finishedDishData) {
     const dishVisual = document.createElement('span');
     dishVisual.classList.add('finished-dish-item');
     dishVisual.dataset.dishInstanceId = finishedDishData.id;
 
+    // Use the visual directly from the recipe object (handles known and unknown dishes)
     let visualText = finishedDishData.recipe.visual;
-    if (finishedDishData.recipe.ingredients.includes('rice') && !visualText.startsWith(INGREDIENTS['rice'])) {
+
+    // Special handling for known recipes with rice (if visual doesn't already include it)
+    if (finishedDishData.recipe.name !== "Unknown Dish" &&
+        finishedDishData.recipe.ingredients.includes('rice') &&
+        !visualText.startsWith(INGREDIENTS['rice']))
+    {
         visualText = INGREDIENTS['rice'] + ' ' + visualText;
     }
+
     dishVisual.textContent = visualText;
+
+    // Add tooltip and click listener for discarding
+    const penalty = 1;
+    dishVisual.title = `Click to discard ${finishedDishData.recipe.name} (-${penalty} point)`;
+    dishVisual.addEventListener('click', handleDiscardDishClick); // Add listener
 
     finishedDishDisplay.appendChild(dishVisual);
     updateDeliverButtonState(); // Update button state when a dish is added
 }
 
+// --- UPDATED: handleDiscardDishClick (No functional change needed here from last version) ---
+function handleDiscardDishClick(event) {
+    const dishElement = event.currentTarget; // The clicked span element
+    const dishInstanceId = dishElement.dataset.dishInstanceId;
+
+    // Prevent discarding if the dish is currently being delivered/animated
+    if (animatingDishIds.has(dishInstanceId)) {
+        showMessage("Cannot discard a dish that is currently being delivered!", "orange");
+        return;
+    }
+
+    // Find the index of the dish in the logical queue
+    const dishIndex = finishedDishes.findIndex(dish => dish.id === dishInstanceId);
+
+    if (dishIndex > -1) {
+        const discardedDishName = finishedDishes[dishIndex].recipe.name;
+        const penalty = 1; // Keep penalty consistent
+
+        // Remove from logical queue
+        finishedDishes.splice(dishIndex, 1);
+
+        // Remove from visual queue
+        dishElement.remove(); // Already have the element reference
+
+        // Apply penalty
+        score -= penalty; // Penalty for discarding
+        if (score < 0) score = 0;
+        updateScoreDisplay();
+
+        // Show feedback message
+        showMessage(`Discarded ${discardedDishName}. (-${penalty} point)`, "orange");
+
+        // Update the deliver button state as the queue has changed
+        updateDeliverButtonState();
+    } else {
+        console.warn(`Attempted to discard dish with ID ${dishInstanceId}, but it was not found in the finishedDishes array.`);
+        // Optionally remove the element anyway if it exists visually but not logically
+        if (dishElement.parentNode) {
+             dishElement.remove();
+             updateDeliverButtonState();
+        }
+    }
+}
+
+
+// --- UPDATED: removeFinishedDishFromDisplay - Now ONLY removes visually ---
+// This is called by the animation cleanup now, not directly by delivery logic.
 function removeFinishedDishFromDisplay(dishInstanceId) {
     const dishElement = finishedDishDisplay.querySelector(`.finished-dish-item[data-dish-instance-id="${dishInstanceId}"]`);
     if (dishElement) {
         dishElement.remove();
-        updateDeliverButtonState(); // Update button state when a dish is removed
+        // DO NOT update button state here, it's handled by animation end / deliver all start
     } else {
-        console.warn(`Could not find dish element with ID ${dishInstanceId} to remove from display.`);
+        // This might happen if the queue was cleared visually by Deliver All
+        // console.warn(`Could not find dish element with ID ${dishInstanceId} to remove from display (might have been cleared by Deliver All).`);
     }
 }
 
+// --- UPDATED: clearFinishedDishDisplay - Now also called by Deliver All ---
 function clearFinishedDishDisplay() {
-    Array.from(finishedDishDisplay.children).forEach(child => child.remove());
-    finishedDishDisplay.innerHTML = ''; // Clear completely
-    updateDeliverButtonState(); // Update button state when queue is cleared
+    // Clear visual representation
+    Array.from(finishedDishDisplay.children).forEach(child => {
+        // Important: Remove event listeners to prevent memory leaks if elements are somehow held elsewhere
+         const instanceId = child.dataset.dishInstanceId;
+         // Assuming handleDiscardDishClick is the listener function reference stored globally or accessible here
+         // If not, you might need a more robust way to track/remove listeners
+         // For simplicity, assuming direct reference works for now:
+         child.removeEventListener('click', handleDiscardDishClick);
+         child.remove();
+    });
+    finishedDishDisplay.innerHTML = ''; // Ensure it's fully empty
+
+    // Note: Do not update button state here directly, call it explicitly where needed
+    // updateDeliverButtonState();
 }
+
 
 function updateHungerMeterDisplay() {
     if (currentParty && currentParty.targetSatisfaction > 0) {
@@ -251,38 +329,54 @@ function createIngredientButtons() {
 }
 
 // --- Animation Function ---
+// --- UPDATED: animateDishOrbit - Call removeFinishedDishFromDisplay on cleanup ---
 function animateDishOrbit(dishVisualText, servedDishData) {
     const dishInstanceId = servedDishData.id;
-
-    if (!gameArea || !tableArea || !dishVisualText || !servedDishData || !servedDishData.customerId) {
+     // Ensure servedDishData and recipe exist
+    if (!gameArea || !tableArea || !dishVisualText || !servedDishData || !servedDishData.recipe) {
         console.error("Missing elements or data for orbit animation:", { dishVisualText, servedDishData });
-        animatingDishIds.delete(dishInstanceId); // Clean up if animation can't start
-        updateDeliverButtonState(); // Ensure button state is correct
+        if (animatingDishIds.has(dishInstanceId)) {
+            animatingDishIds.delete(dishInstanceId); // Clean up animation tracker
+            updateDeliverButtonState(); // Update buttons if animation failed to start
+        }
         return;
     }
 
+    // Safety check: If element already exists, don't create another
     if (document.querySelector(`.orbiting-dish[data-orbit-id="${dishInstanceId}"]`)) {
         console.warn(`Orbit animation already exists for dish ID: ${dishInstanceId}`);
-        return;
+        return; // Avoid duplicate animations
     }
 
     const orbiter = document.createElement('div');
     orbiter.classList.add('orbiting-dish');
     orbiter.textContent = dishVisualText;
-    orbiter.dataset.orbitId = dishInstanceId;
-    document.body.appendChild(orbiter);
+    orbiter.dataset.orbitId = dishInstanceId; // Use dataset for easier selection
+    document.body.appendChild(orbiter); // Append to body to avoid layout shifts
 
+    // --- Calculate Positions ---
     const gameAreaRect = gameArea.getBoundingClientRect();
     const tableAreaRect = tableArea.getBoundingClientRect();
     const scrollX = window.scrollX || window.pageXOffset;
     const scrollY = window.scrollY || window.pageYOffset;
-    const queueRect = finishedDishDisplay.getBoundingClientRect();
-    const orbiterRect = orbiter.getBoundingClientRect();
+
+    // Find the original visual element in the queue (if it still exists) for start position
+    const startElement = finishedDishDisplay.querySelector(`.finished-dish-item[data-dish-instance-id="${dishInstanceId}"]`);
+    let startRect;
+    if(startElement) {
+        startRect = startElement.getBoundingClientRect();
+    } else {
+        // Fallback if element was already removed (e.g., by Deliver All visual clear)
+        // Start from the center of the (potentially empty) queue display area
+        startRect = finishedDishDisplay.getBoundingClientRect();
+    }
+
+    const orbiterRect = orbiter.getBoundingClientRect(); // Get orbiter size *after* adding content
     const offsetX = orbiterRect.width / 2;
     const offsetY = orbiterRect.height / 2;
 
-    const startX = queueRect.left + queueRect.width / 2 + scrollX - offsetX;
-    const startY = queueRect.top + queueRect.height / 2 + scrollY - offsetY;
+    const startX = startRect.left + startRect.width / 2 + scrollX - offsetX;
+    const startY = startRect.top + startRect.height / 2 + scrollY - offsetY;
 
     const path = {
         topLeft: { x: gameAreaRect.left + scrollX - offsetX + 30, y: gameAreaRect.top + scrollY - offsetY + 30 },
@@ -296,59 +390,84 @@ function animateDishOrbit(dishVisualText, servedDishData) {
     orbiter.style.position = 'absolute';
     orbiter.style.top = `${startY}px`;
     orbiter.style.left = `${startX}px`;
-    orbiter.style.opacity = '0';
+    orbiter.style.opacity = '0'; // Start invisible
 
+    // --- Animation Definition ---
     const keyframes = [
-        { transform: `translate(0, 0) scale(0.8)`, opacity: 0, offset: 0 },
+        { transform: `translate(0, 0) scale(0.8)`, opacity: 0, offset: 0 }, // Fade in at start position
         { transform: `translate(0, 0) scale(1)`, opacity: 1, offset: 0.05 },
-        { transform: `translate(${path.topLeft.x - startX}px, ${path.topLeft.y - startY}px) scale(1.1)`, opacity: 1, offset: 0.25 },
+        { transform: `translate(${path.topLeft.x - startX}px, ${path.topLeft.y - startY}px) scale(1.1)`, opacity: 1, offset: 0.25 }, // Move to points
         { transform: `translate(${path.topRight.x - startX}px, ${path.topRight.y - startY}px) scale(1)`, opacity: 1, offset: 0.5 },
         { transform: `translate(${path.bottomRight.x - startX}px, ${path.bottomRight.y - startY}px) scale(0.9)`, opacity: 1, offset: 0.75 },
-        { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0.5)`, opacity: 0, offset: 1 }
+        { transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0.5)`, opacity: 0, offset: 1 } // Move to end and fade out
     ];
     const options = { duration: 3000, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' };
     let fallbackTimeout;
 
+    // --- Cleanup Function (Removes Orbiter, Updates State) ---
     const cleanupOrbiter = (reason = "unknown") => {
+         // Remove the visual representation from the queue IF IT STILL EXISTS
+         // (It might have been removed by Deliver All's visual clear)
+         removeFinishedDishFromDisplay(dishInstanceId);
+
+         // Clean up animation tracker
          if (animatingDishIds.has(dishInstanceId)) {
              animatingDishIds.delete(dishInstanceId);
-             updateDeliverButtonState(); // UPDATE BUTTON STATE
+             updateDeliverButtonState(); // Update buttons AFTER removing from set
          }
+         // Remove the orbiting element itself
          if (orbiter.parentNode) orbiter.parentNode.removeChild(orbiter);
-         clearTimeout(fallbackTimeout);
+         clearTimeout(fallbackTimeout); // Clear safety timer
+         // console.log(`Cleanup orbiter ${dishInstanceId} due to: ${reason}`);
     };
 
+    // --- Delivery Result Logic (On Animation Finish) ---
     const handleServeSuccess = () => {
-        const customer = findCustomerById(servedDishData.customerId);
-        if (customer && customer.state === 'waiting') {
+        let targetCustomer = null;
+        if (currentParty && servedDishData.recipe) {
+            targetCustomer = currentParty.members.find(c =>
+                c.state === 'waiting' &&
+                c.order &&
+                c.order.name === servedDishData.recipe.name
+            );
+        }
+
+        if (targetCustomer) {
              score += 10;
              updateScoreDisplay();
-             showMessage(`Delivered ${servedDishData.recipe.name} to Customer ${customer.seatNumber}! (+10)`, "green");
-             startEating(servedDishData.customerId);
+             showMessage(`Delivered ${servedDishData.recipe.name} to Customer ${targetCustomer.seatNumber}! (+10)`, "green");
+             startEating(targetCustomer.id);
         } else {
-            console.warn(`Customer ${servedDishData.customerId} not found or not in 'waiting' state (state: ${customer?.state}) during delivery completion.`);
-            showMessage(`Customer ${customer?.seatNumber || servedDishData.customerId} missed the delivery!`, "orange");
+            score -= 5;
+            if (score < 0) score = 0;
+            updateScoreDisplay();
+            let reason = `No one waiting wanted ${servedDishData.recipe.name || 'this dish'}.`;
+            if (!currentParty || currentParty.members.filter(c => c.state === 'waiting').length === 0) {
+                reason = "No customers were waiting for any order.";
+            }
+            // Distinguish unknown dish penalty message slightly
+            if (servedDishData.recipe.name === "Unknown Dish") {
+                 showMessage(`Delivered an Unknown Dish! ${reason} (-5 points)`, "red");
+            } else {
+                 showMessage(`Wrong Dish! ${reason} (-5 points)`, "red");
+            }
         }
-        cleanupOrbiter("onfinish");
+        cleanupOrbiter("onfinish"); // Run cleanup
     };
 
+    // --- Start Animation ---
     const animation = orbiter.animate(keyframes, options);
-    animation.onfinish = handleServeSuccess;
-    animation.oncancel = () => cleanupOrbiter("oncancel");
-    fallbackTimeout = setTimeout(() => cleanupOrbiter("fallback"), options.duration + 500);
-    updateDeliverButtonState(); // Update button state immediately after starting animation
+    animation.onfinish = handleServeSuccess; // Call result logic when done
+    animation.oncancel = () => cleanupOrbiter("oncancel"); // Cleanup if cancelled
+    // Safety timeout in case onfinish doesn't fire
+    fallbackTimeout = setTimeout(() => cleanupOrbiter("fallback_timeout"), options.duration + 500);
+
+    // No button update here - it's handled when adding to animatingDishIds
 }
+
 
 // --- Mobile Ingredient Tap Handler ---
 function handleIngredientTap(event) {
-    const isCustomerWaiting = currentParty && currentParty.members.some(c => c.state === 'waiting');
-     if (!isCustomerWaiting) {
-         let reason = "No party members waiting for orders";
-         if (currentParty && currentParty.members.length > 0) reason = "Party members are thinking, eating, or finished";
-         if (!currentParty) reason = "No party at the table";
-        showMessage(`${reason}!`, "orange");
-        return;
-    }
     const ingredientName = event.target.dataset.ingredient;
     if (ingredientName && INGREDIENTS[ingredientName]) {
         currentPreparation.push(ingredientName);
@@ -358,58 +477,101 @@ function handleIngredientTap(event) {
     }
 }
 
-// --- NEW: Deliver Button Handler ---
+// --- Deliver Next Button Handler ---
+// --- UPDATED: Simplify - just handles the single dish case ---
 function handleDeliverFoodClick() {
-    if (finishedDishes.length === 0) {
-        showMessage("No dishes ready to deliver!", "orange");
-        return;
-    }
-    const nextDishToServe = finishedDishes[0];
-    if (animatingDishIds.has(nextDishToServe.id)) {
-        showMessage("The next dish is already being served!", "orange");
+    if (finishedDishes.length === 0 || animatingDishIds.size > 0) { // Check if *anything* is animating
+        showMessage("No dish ready or delivery in progress!", "orange");
         return;
     }
 
-    // --- Critical Order ---
-    animatingDishIds.add(nextDishToServe.id);
-    const servedDishData = finishedDishes.shift();
+    // Double check if the *specific* next dish is somehow already animating (shouldn't happen with above check)
+    if (animatingDishIds.has(finishedDishes[0].id)) {
+        showMessage("Next dish is already delivering!", "orange");
+        return;
+    }
+
+    const servedDishData = finishedDishes[0]; // Get the first dish
+
+    // --- Critical State Update ---
+    animatingDishIds.add(servedDishData.id); // Mark as animating
+    // We DO NOT shift() from finishedDishes here. Animation cleanup handles logical removal later.
+    // We remove the *visual* element inside animateDishOrbit's cleanup.
+    updateDeliverButtonState(); // Disable buttons immediately
+    // --- End Critical State Update ---
+
+    // Find the visual text
     const dishVisualElement = finishedDishDisplay.querySelector(`.finished-dish-item[data-dish-instance-id="${servedDishData.id}"]`);
-    const servedDishVisualText = dishVisualElement ? dishVisualElement.textContent : '?';
-    removeFinishedDishFromDisplay(servedDishData.id); // Also calls updateDeliverButtonState
-    // --- End Critical Order ---
+    const servedDishVisualText = dishVisualElement ? dishVisualElement.textContent : (servedDishData.recipe.visual || '?');
 
     showMessage(`Serving ${servedDishData.recipe.name}...`, "blue");
-    animateDishOrbit(servedDishVisualText, servedDishData);
-    updateDeliverButtonState(); // Update state after potential changes
+    animateDishOrbit(servedDishVisualText, servedDishData); // Start animation
 }
 
-// --- NEW: Function to manage button state ---
-function updateDeliverButtonState() {
-    if (finishedDishes.length === 0) {
-        deliverFoodButton.disabled = true;
-    } else {
-        const nextDishId = finishedDishes[0].id;
-        deliverFoodButton.disabled = animatingDishIds.has(nextDishId);
+// --- NEW: Deliver All Button Handler ---
+function handleDeliverAllClick() {
+     if (finishedDishes.length <= 1 || animatingDishIds.size > 0) {
+         // Should be prevented by button state, but good safety check
+        showMessage("Not enough dishes in queue or delivery already in progress!", "orange");
+        return;
     }
+
+    showMessage(`Serving all ${finishedDishes.length} dishes...`, "blue");
+
+    // --- Critical State Update ---
+    const dishesToDeliver = [...finishedDishes]; // Create a copy to iterate over
+    finishedDishes = []; // Clear the logical queue immediately
+    dishesToDeliver.forEach(dish => animatingDishIds.add(dish.id)); // Mark ALL as animating AFTER clearing logical queue
+    clearFinishedDishDisplay(); // Clear the visual queue immediately
+    updateDeliverButtonState(); // Disable buttons based on empty queue / animating state
+    // --- End Critical State Update ---
+
+
+    // Animate each dish with a stagger
+    dishesToDeliver.forEach((dishData, index) => {
+        // Find visual text (use data from the copied object)
+        // We need to reconstruct the visual text here as the elements are gone
+        let actualVisualText = dishData.recipe.visual || '?';
+         if (dishData.recipe.name !== "Unknown Dish" &&
+             dishData.recipe.ingredients.includes('rice') &&
+             !actualVisualText.startsWith(INGREDIENTS['rice'])) {
+             actualVisualText = INGREDIENTS['rice'] + ' ' + actualVisualText;
+         }
+
+        // Use setTimeout to stagger the animation starts
+        setTimeout(() => {
+            // Double check it wasn't somehow removed from animating set prematurely
+            if(animatingDishIds.has(dishData.id)) {
+                 animateDishOrbit(actualVisualText, dishData);
+            } else {
+                console.warn(`Skipping animation for ${dishData.id}, it was removed from animating set.`);
+            }
+        }, index * DELIVER_ALL_STAGGER_MS); // Stagger based on index
+    });
 }
+
+
+// --- Function to manage button states ---
+// --- UPDATED: To handle both buttons ---
+function updateDeliverButtonState() {
+    const queueLength = finishedDishes.length;
+    const isAnimating = animatingDishIds.size > 0;
+
+    // Deliver Next Button: Enabled if queue has items AND no animations are running
+    deliverFoodButton.disabled = queueLength === 0 || isAnimating;
+
+    // Deliver All Button: Enabled if queue has MORE than 1 item AND no animations are running
+    deliverAllButton.disabled = queueLength <= 1 || isAnimating;
+}
+
 
 // --- Desktop Ingredient Drag and Drop Handlers ---
 function handleIngredientDragStart(event) {
     if (IS_MOBILE) { event.preventDefault(); return; }
-    const isCustomerWaiting = currentParty && currentParty.members.some(c => c.state === 'waiting');
-    if (!isCustomerWaiting) {
-         let reason = "No party members waiting for orders";
-         if (currentParty && currentParty.members.length > 0) reason = "Party members are thinking, eating, or finished";
-         if (!currentParty) reason = "No party at the table";
-        showMessage(`${reason}!`, "orange");
-        event.preventDefault();
-        return;
-    }
     const ingredientName = event.target.dataset.ingredient;
     event.dataTransfer.setData('text/plain', ingredientName);
     event.dataTransfer.effectAllowed = 'copy';
 }
-
 function handleIngredientDragOver(event) {
     if (IS_MOBILE) return;
     event.preventDefault();
@@ -419,7 +581,6 @@ function handleIngredientDragOver(event) {
         event.dataTransfer.dropEffect = 'none';
     }
 }
-
 function handleIngredientDragEnter(event) {
      if (IS_MOBILE) return;
      event.preventDefault();
@@ -427,7 +588,6 @@ function handleIngredientDragEnter(event) {
        prepDisplay.classList.add('drag-over');
      }
 }
-
 function handleIngredientDragLeave(event) {
      if (IS_MOBILE) return;
      event.preventDefault();
@@ -439,13 +599,10 @@ function handleIngredientDragLeave(event) {
           prepDisplay.classList.remove('drag-over');
       }
 }
-
 function handleIngredientDrop(event) {
     if (IS_MOBILE) return;
     event.preventDefault();
     prepDisplay.classList.remove('drag-over');
-    const isCustomerWaiting = currentParty && currentParty.members.some(c => c.state === 'waiting');
-    if (!isCustomerWaiting) { showMessage("No party members waiting for an order!", "orange"); return; }
     const ingredientName = event.dataTransfer.getData('text/plain');
     if (ingredientName && INGREDIENTS[ingredientName]) {
         currentPreparation.push(ingredientName);
@@ -455,3 +612,21 @@ function handleIngredientDrop(event) {
         showMessage("Could not add ingredient from drop.", "orange");
     }
 }
+
+// --- Initial Event Listener Setup (in DOMContentLoaded or similar) ---
+// Make sure this runs after the DOM is loaded (e.g., inside game.js's DOMContentLoaded)
+// Example structure (assuming called from game.js):
+// document.addEventListener('DOMContentLoaded', () => {
+//     // ... other initializations in game.js ...
+//
+//     // Find buttons (could be done here or rely on global refs if careful)
+//     const deliverBtn = document.getElementById('deliver-food-btn');
+//     const deliverAllBtn = document.getElementById('deliver-all-btn');
+//
+//     if (deliverBtn) deliverBtn.addEventListener('click', handleDeliverFoodClick);
+//     if (deliverAllBtn) deliverAllBtn.addEventListener('click', handleDeliverAllClick); // ADDED Listener
+//
+//     // initGame() call ...
+// });
+// Note: If ui.js is loaded before game.js, these listeners need to be added
+// in game.js's DOMContentLoaded listener as shown above.

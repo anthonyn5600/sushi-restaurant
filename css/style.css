@@ -472,21 +472,42 @@ h3 {
   border: 1px solid var(--color-border-light);
   border-radius: var(--border-radius-small);
   box-shadow: var(--shadow-interactive);
-  transition: box-shadow 0.2s ease, transform 0.1s ease;
   min-height: calc(var(--touch-target-min-size) * 0.9); /* Ensure tappable */
   line-height: 1; /* Consistent height */
   text-align: center;
+  /* --- ADDED --- */
+  cursor: pointer; /* Indicate clickability */
+  transition: box-shadow 0.2s ease, transform 0.15s ease, background-color 0.15s ease; /* Add transform */
 }
 
-/* --- ADD Styles for Deliver Button --- */
+/* --- ADDED --- */
+.finished-dish-item:hover {
+    transform: translateY(-2px) scale(1.03); /* Slight lift and grow */
+    box-shadow: var(--shadow-medium); /* More prominent shadow */
+    background-color: #fff8f8; /* Very light red tint on hover */
+    border-color: #fcc;
+}
+.finished-dish-item:active {
+    transform: scale(0.97); /* Shrink on click */
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    background-color: #ffebeb; /* Slightly darker red tint on active */
+}
+
+
+/* --- ADD Styles for Deliver Button Container and New Button --- */
 .deliver-action {
     margin-top: 0.8rem;
     text-align: center;
     width: 100%; /* Ensure it takes width for centering */
+    /* --- ADDED: Use flexbox for button layout --- */
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem; /* Space between buttons */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 #deliver-food-btn {
-    padding: 0.7rem 1.2rem;
+    padding: 0.7rem 1.0rem; /* Slightly less wide */
     font-size: 0.9rem;
     font-weight: 600;
     border: none;
@@ -512,13 +533,44 @@ h3 {
     transform: scale(0.98);
     box-shadow: none;
 }
-#deliver-food-btn:disabled {
+
+/* --- NEW: Styles for Deliver All Button --- */
+#deliver-all-btn {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    color: white;
+    background-color: #6a5acd; /* SlateBlue - Different color */
+    border-radius: var(--border-radius-medium);
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, transform 0.1s ease;
+    box-shadow: var(--shadow-interactive);
+    min-height: calc(var(--touch-target-min-size) * 0.9);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    letter-spacing: 0.5px;
+}
+#deliver-all-btn:hover:not(:disabled) {
+    background-color: #483d8b; /* Darker SlateBlue */
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-1px);
+}
+#deliver-all-btn:active:not(:disabled) {
+    transform: scale(0.98);
+    box-shadow: none;
+}
+#deliver-food-btn:disabled, /* Shared disabled style */
+#deliver-all-btn:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
     opacity: 0.6;
     box-shadow: none;
     transform: none;
 }
+
 
 /* --- UI Area Components (Desktop Score/Messages) --- */
 #ui-area h2 { color: var(--color-primary-dark); font-weight: 700; margin-bottom: 0.5rem; }
@@ -635,7 +687,8 @@ h3 {
 
 /* Button Disabled States */
 #finish-prep-btn:disabled,
-#deliver-food-btn:disabled { /* Added deliver button */
+#deliver-food-btn:disabled,
+#deliver-all-btn:disabled { /* Added deliver all button */
   background-color: #cccccc;
   cursor: not-allowed;
   opacity: 0.6;
@@ -652,14 +705,13 @@ h3 {
 /* Optional: Hide drag hover effects on touch devices */
 @media (pointer: coarse) {
   #prep-display.drag-over { border-color: var(--color-border-light); background-color: var(--color-background-alt); transform: none; }
-  /* Belt styles removed */
 }
 
 /* ==========================================================================
    5. Animations
    ========================================================================== */
 @keyframes flash-red { 0%, 100% { background-color: var(--color-background-alt); border-color: var(--color-border-light); } 50% { background-color: var(--color-error-bg); border-color: var(--color-error); } }
-.orbiting-dish { position: absolute; z-index: 1000; font-size: 2.2em; user-select: none; pointer-events: none; will-change: transform; background-color: rgba(255, 255, 255, 0.7); padding: 0.1rem 0.5rem; border-radius: var(--border-radius-small); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); text-shadow: 0 0 2px white; }
+.orbiting-dish { position: absolute; z-index: 1000; font-size: 2.2em; user-select: none; pointer-events: none; will-change: transform, opacity; background-color: rgba(255, 255, 255, 0.7); padding: 0.1rem 0.5rem; border-radius: var(--border-radius-small); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); text-shadow: 0 0 2px white; }
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
 /* ==========================================================================
@@ -731,11 +783,36 @@ h3 {
   #finished-dish-display { max-height: 50px; min-height: 35px; overflow-y: auto; gap: 0.4rem; padding: 0.3rem; align-content: flex-start; scrollbar-width: thin; width: 100%; max-width: none; margin: 0; }
   #finished-dish-display::-webkit-scrollbar { width: 4px; }
   #finished-dish-display::-webkit-scrollbar-thumb { background-color: var(--color-primary-light); }
-  .finished-dish-item { font-size: 1.4em; padding: 0.1rem 0.3rem; min-height: 30px; }
+  .finished-dish-item {
+      font-size: 1.4em;
+      padding: 0.1rem 0.3rem;
+      min-height: 30px;
+      cursor: pointer;
+      transition: box-shadow 0.2s ease, transform 0.15s ease, background-color 0.15s ease;
+  }
+   /* Note: :hover might not be very effective on touch, but :active will be */
+  .finished-dish-item:hover {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: var(--shadow-soft);
+       background-color: #fff8f8;
+       border-color: #fcc;
+  }
+  .finished-dish-item:active {
+      transform: scale(0.97);
+      box-shadow: inset 0 1px 1px rgba(0,0,0,0.1);
+      background-color: #ffebeb;
+  }
 
   /* Deliver button mobile */
-   .deliver-action { margin-top: 0.4rem; }
-   #deliver-food-btn { font-size: 0.8rem; padding: 0.5rem 0.9rem; min-height: 32px; }
+   .deliver-action {
+       margin-top: 0.4rem;
+       gap: 0.5rem;
+   }
+   #deliver-food-btn, #deliver-all-btn { /* Apply size changes to both */
+       font-size: 0.8rem;
+       padding: 0.5rem 0.9rem;
+       min-height: 32px;
+   }
 
   /* Table Area Styling */
   #table-area h2 { font-size: 0.9rem; margin-bottom: 0.3rem; padding-bottom: 0.2rem; border-bottom: 1px dotted var(--color-border-light); color: var(--color-primary-medium); flex-shrink: 0; }
@@ -771,7 +848,11 @@ h3 {
   #finished-dish-display { max-height: 40px; }
   .finished-dish-item { font-size: 1.3em; }
   /* Deliver button */
-  #deliver-food-btn { font-size: 0.75rem; padding: 0.4rem 0.7rem; min-height: 30px; }
+   #deliver-food-btn, #deliver-all-btn { /* Apply size changes to both */
+      font-size: 0.75rem;
+      padding: 0.4rem 0.7rem;
+      min-height: 30px;
+   }
   /* Table */
   #table-area h2 { font-size: 0.8rem; margin-bottom: 0.2rem; }
   #party-status { font-size: 0.7rem; margin-bottom: 0.3rem; }
@@ -792,7 +873,8 @@ h3 {
   .finished-dish-item { font-size: 1.6em; }
   #finished-dish-display { min-height: 45px; padding: 0.5rem; max-height: 100px; }
   #finish-prep-btn { font-size: 0.9rem; padding: 0.7rem 1.2rem; }
-  #deliver-food-btn { font-size: 0.9rem; padding: 0.7rem 1.2rem; } /* Added button style */
+  #deliver-food-btn { font-size: 0.9rem; padding: 0.7rem 1.0rem; } /* Adjusted padding */
+  #deliver-all-btn { font-size: 0.9rem; padding: 0.7rem 1.2rem; } /* Added button style */
   #ui-area #message-area { font-size: 0.9rem; min-height: 25px; }
   #table-area { min-height: 130px; padding: 1rem; margin: 1rem auto; max-height: 200px; display: flex; }
   #table-area h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
